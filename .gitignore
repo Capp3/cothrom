@@ -26,7 +26,7 @@ $RECYCLE.BIN/
 # =============================================================================
 
 # Visual Studio Code
-#.vscode/
+.vscode/
 
 # PyCharm / IntelliJ
 #.idea/
@@ -69,7 +69,7 @@ tramp
 # =============================================================================
 
 # Cursor AI
-# .cursor/
+.cursor/
 
 # Windsurf AI
 .windsurf/

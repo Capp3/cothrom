@@ -1,0 +1,24 @@
+###
+### Networks
+###
+
+networks:
+  ingress:
+    driver: bridge
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+  database:
+    driver: bridge
+
+###
+### Include
+###
+
+include:
+  - path: ./webservices.yml
+    env_file:
+      - .env
+      - ./config/static/common.env
+      - ./config/webservices.env
