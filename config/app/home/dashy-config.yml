@@ -1,0 +1,58 @@
+---
+# Page meta info, like heading, footer text and nav links
+pageInfo:
+  title: Cothrom
+  description: Welcome to the Cothrom dashboard!
+  navLinks:
+    - title: Documentation
+      path: https://dashy.to/docs
+
+# Optional app settings and configuration
+appConfig:
+  theme: colorful
+  language: en
+  statusCheck: true
+  webSearch:
+    searchEngine: google
+    openingMethod: newtab
+
+# Main content - An array of sections, each containing an array of items
+sections:
+  - name: Tools
+    icon: fas fa-rocket
+    items:
+      - title: apps
+        description: Appsmith app creator
+        url: https://apps.cothrom.ie
+        target: newtab
+      - title: files
+        description: File sharing and management
+        url: https://files.cothrom.ie
+        target: newtab
+      - title: data
+        description: Data management and analysis
+        url: https://data.cothrom.ie
+        target: newtab
+      - title: grammar
+        description: Grammar checking and correction
+        url: https://grammar.cothrom.ie
+        target: newtab
+      - title: grist
+        description: Airtable replacement
+        url: https://grist.cothrom.ie
+        target: newtab
+      - title: meetings
+        description: Group wear
+        url: https://meetings.cothrom.ie
+        target: newtab
+  - name: Docs
+    icon: fas fa-book
+    items:
+      - title: Dashy
+        description: Dashboard
+        url: https://dashy.to/docs/
+        target: newtab
+      - title: Docker
+        description: Docker documentation
+        url: https://docs.docker.com/
+        target: newtab

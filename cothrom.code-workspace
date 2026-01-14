@@ -78,9 +78,11 @@
     // File Associations
     "files.associations": {
       "Dockerfile*": "dockerfile",
-      "docker-compose*.yml": "dockercompose",
-      "docker-compose*.yaml": "dockercompose",
-      "*.dockerfile": "dockerfile"
+      "docker-compose*.yml": "compose",
+      "docker-compose*.yaml": "compose",
+      "*.dockerfile": "dockerfile",
+      "docker/*.yml": "dockercompose",
+      "docker/*.yaml": "dockercompose"
     },
     "cSpell.ignoreWords": ["Perplexica"],
     "cSpell.words": [
@@ -95,6 +97,7 @@
       "Noco",
       "Omnitools",
       "pastebin",
+      "PUID",
       "Shlink",
       "Snipeit"
     ]

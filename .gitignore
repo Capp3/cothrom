@@ -143,7 +143,7 @@ ai_workspace/
 # =============================================================================
 
 # General build directories
-build/
+# build/
 dist/
 dist-ssr/
 target/

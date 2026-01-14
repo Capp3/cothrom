@@ -1,0 +1,39 @@
+services:
+  nocodb:
+    depends_on:
+      nocodb_db:
+        condition: service_healthy
+    environment:
+      NC_DB: TODO
+    image: 'nocodb/nocodb:latest'
+    container_name: data_nocodb
+    ports:
+      - ${DATA_PORT}:8080
+    restart: always
+    volumes:
+      - data_nocodb:/usr/app/data
+    networks:
+      - database
+      - frontend
+
+  nocodb_db:
+    container_name: data_nocodb_db
+    environment:
+      POSTGRES_DB: nocodb_db
+      POSTGRES_PASSWORD: ${DATA_NOCODB_POSTGRES_PASSWORD}
+      POSTGRES_USER: ${DATA_NOCODB_POSTGRES_USER}
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"'
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_db:/var/lib/postgresql/data
+    networks:
+      - database
+
+volumes:
+  data_nocodb:
+  data_nocodb_db:

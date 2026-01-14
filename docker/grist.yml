@@ -1,0 +1,56 @@
+services:
+  grist:
+    image: gristlabs/grist:latest
+    container_name: grist
+    user: '${PUID}'
+    environment:
+      - PORT=8080
+      - APP_HOME_URL=https://grist.${DOMAIN}
+      - GRIST_ALLOWED_HOSTS=webhook.grist.${DOMAIN}
+      - GRIST_DOMAIN=grist.${DOMAIN}
+      - GRIST_SINGLE_ORG=${GRIST_SINGLE_ORG}
+      - GRIST_HIDE_UI_ELEMENTS=billing
+      - GRIST_LIST_PUBLIC_SITES=false
+      - GRIST_MAX_UPLOAD_ATTACHMENT_MB=15
+      - GRIST_MAX_UPLOAD_IMPORT_MB=500
+      - GRIST_ORG_IN_PATH=false
+      - GRIST_PAGE_TITLE_SUFFIX=_blank
+      - GRIST_FORCE_LOGIN=true
+      - GRIST_SUPPORT_ANON=false
+      - GRIST_THROTTLE_CPU=true
+      - GRIST_SANDBOX_FLAVOR=gvisor
+      - PYTHON_VERSION=3
+      - PYTHON_VERSION_ON_CREATION=3
+      - TYPEORM_DATABASE=grist
+      - TYPEORM_USERNAME=grist
+      - TYPEORM_HOST=grist_db
+      - TYPEORM_LOGGING=false
+      - TYPEORM_PASSWORD=${GRIST_POSTGRES_PASSWORD}
+      - TYPEORM_PORT=5432
+      - TYPEORM_TYPE=postgres
+    volumes:
+      - grist_data:/persist
+    ports:
+      - 3000:8080
+    depends_on:
+      - database
+    networks:
+      - frontend
+      - database
+
+  grist_db:
+    image: postgres:17-bookworm
+    container_name: grist_db
+    user: '${PUID}'
+    environment:
+      - POSTGRES_DB=grist
+      - POSTGRES_USER=grist
+      - POSTGRES_PASSWORD=${GRIST_POSTGRES_PASSWORD}
+    volumes:
+      - grist_db:/var/lib/postgresql/data
+    networks:
+      - database
+
+volumes:
+  grist_data:
+  grist_db:

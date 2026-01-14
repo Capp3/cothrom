@@ -1,0 +1,17 @@
+services:
+  serviceName:
+    image: apache/openmeetings
+    container_name: meetings_openmeetings
+    environment:
+      - PUID=${PUID}
+    volumes:
+      - meetings_openmeetings:/opt/omdata
+    ports:
+      - ${MEETINGS_PORT}:5443
+    restart: unless-stopped
+    networks:
+      - frontend
+
+volumes:
+  meetings_openmeetings:
+# Access with https://<host>:<MEETINGS_PORT>/openmeetings

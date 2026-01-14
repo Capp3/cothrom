@@ -1,0 +1,22 @@
+languagetool:
+  build:
+    context: .
+    dockerfile: build/dockerfile.languagetool
+  tty: true
+  stdin_open: true
+  volumes:
+    - grammar_languagetool_ngrams:/ngrams
+  environment:
+    LANG: ${GRAMMAR_LOCALE_LANGUAGE}
+    LANGUAGE: ${GRAMMAR_LANGTOOL_LANGUAGE}
+    LC_ALL: ${GRAMMAR_LOCALE_LANGUAGE}
+    download_ngrams_for_langs: ${GRAMMAR_DOWNLOAD_NGRAM_LANGS:-none}
+  restart: always
+  networks:
+    - frontend
+  container_name: grammar_languagetool
+  ports:
+    - '${GRAMMAR_PORT}:8081}'
+
+volumes:
+  grammar_languagetool_ngrams:

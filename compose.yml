@@ -17,8 +17,10 @@ networks:
 ###
 
 include:
-  - path: ./webservices.yml
-    env_file:
-      - .env
-      - ./config/static/common.env
-      - ./config/webservices.env
+  - path: ./docker/apps.yml
+  - path: ./docker/files.yml
+  - path: ./docker/data.yml
+  - path: ./docker/grammar.yml
+  - path: ./docker/grist.yml
+  - path: ./docker/home.yml
+  - path: ./docker/meetings.yml

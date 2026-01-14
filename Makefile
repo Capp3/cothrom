@@ -94,9 +94,9 @@ update-rules: ## Update cursor rules for frameworks and languages
 	@mkdir -p $(TEMP_DIR)
 	@if git clone --depth 1 https://github.com/PatrickJS/awesome-cursorrules.git $(TEMP_DIR)/awesome-cursorrules 2>/dev/null; then \
 		echo "Successfully cloned awesome-cursorrules repository"; \
-		if [ -d "$(TEMP_DIR)/awesome-cursorrules/.cursor/rules" ]; then \
+		if [ -d "$(TEMP_DIR)/awesome-cursorrules/rules-new" ]; then \
 			mkdir -p .cursor/rules; \
-			cp -R $(TEMP_DIR)/awesome-cursorrules/.cursor/rules/* .cursor/rules/ && \
+			cp -R $(TEMP_DIR)/awesome-cursorrules/rules-new/* .cursor/rules/ && \
 			echo "Rules updated successfully"; \
 		else \
 			echo "Warning: Rules directory not found in repository"; \
