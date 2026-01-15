@@ -13,8 +13,8 @@
 | MyIP                                                    | Network tools                   | network   |   1   |      |
 | [dolibarr](https://www.dolibarr.org/)                   | ERP / CRM                       | company   |   1   |      |
 | [Appsmith](https://www.appsmith.com/)                   | app creator                     | apps      |   1   | x    |
-| Shlink                                                  | URL Shortener                   | url       |   1   |
-| [Baikal](https://sabre.io/baikal/)                      | Calender Management             | cal       |   1   |
+| Shlink                                                  | URL Shortener                   | url       |   1   |      |
+| [Baikal](https://sabre.io/baikal/)                      | Calender Management             | cal       |   1   | x    |
 | [Etherpad](https://etherpad.org/)                       | Collaborative Document Creation | documents |       |
 | [AnythingLLM](https://anythingllm.com/)                 | Self hosted LLM agent           | ai        |       |
 | [twenty](https://twenty.com/)                           | CRM                             | crm       |       |

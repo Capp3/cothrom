@@ -1,14 +1,14 @@
 services:
-   appsmith:
-     image: index.docker.io/appsmith/appsmith-ee
-     container_name: apps_appsmith
-     ports:
-         - "80:80"
-         - "443:443"
-     volumes:
-         - apps_appsmith:/appsmith-stacks
-     restart: unless-stopped
-     networks:
+  appsmith:
+    image: index.docker.io/appsmith/appsmith-ee
+    container_name: apps_appsmith
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - apps_appsmith:/appsmith-stacks
+    restart: unless-stopped
+    networks:
       - frontend
       - database
 

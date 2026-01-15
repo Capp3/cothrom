@@ -54,7 +54,7 @@
 
     // Dockerfile Formatting
     "[dockerfile]": {
-      "editor.defaultFormatter": "ms-azuretools.vscode-docker",
+      "editor.defaultFormatter": "esbenp.prettier-vscode",
       "editor.formatOnSave": true
     },
 
@@ -64,12 +64,6 @@
       "editor.formatOnSave": true
     },
 
-    // Docker Extension Configuration
-    "docker.containers.sortBy": "CreatedTime",
-    "docker.containers.groupBy": "None",
-    "docker.images.sortBy": "CreatedTime",
-    "docker.showStartPage": false,
-
     // Docker Compose
     "docker.composeCommand": "docker compose",
     "docker.dockerComposeBuild": true,
@@ -78,28 +72,48 @@
     // File Associations
     "files.associations": {
       "Dockerfile*": "dockerfile",
-      "docker-compose*.yml": "compose",
-      "docker-compose*.yaml": "compose",
       "*.dockerfile": "dockerfile",
+      "docker-compose*.yml": "dockercompose",
+      "docker-compose*.yaml": "dockercompose",
+      "docker/**/*.yml": "dockercompose",
+      "docker/**/*.yaml": "dockercompose",
       "docker/*.yml": "dockercompose",
       "docker/*.yaml": "dockercompose"
     },
-    "cSpell.ignoreWords": ["Perplexica"],
+
+    // ESPHome Configuration - Exclude docker folder
+    "esphome.configFiles": [],
+    "esphome.include": ["**/*.yaml", "**/*.yml"],
+    "esphome.exclude": ["docker/**"],
+    "cSpell.ignoreWords": ["MSMTPRC", "Perplexica", "ckulka", "monkeybutts"],
     "cSpell.words": [
       "Airtable",
       "Appsmith",
       "Authelia",
       "collabora",
       "Dashy",
+      "dockercompose",
       "dolibarr",
+      "esphome",
       "Flowy",
       "Immich",
+      "LANGTOOL",
+      "myorg",
+      "NGRAM",
       "Noco",
+      "nocodb",
       "Omnitools",
       "pastebin",
+      "PGID",
       "PUID",
       "Shlink",
       "Snipeit"
-    ]
+    ],
+    "containers.containers.groupBy": "None",
+    "containers.containers.sortBy": "CreatedTime",
+    "containers.images.sortBy": "CreatedTime",
+    "containers.composeBuild": true,
+    "containers.composeDetached": true,
+    "containers.composeCommand": "docker compose"
   }
 }
