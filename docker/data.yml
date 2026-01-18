@@ -4,7 +4,7 @@ services:
       nocodb_db:
         condition: service_healthy
     environment:
-      NC_DB: TODO
+      NC_DB: 'pg://nocodb_db:5432?u=${DATA_NOCODB_POSTGRES_USER}&p=${DATA_NOCODB_POSTGRES_PASSWORD}&d=nocodb_db'
     image: 'nocodb/nocodb:latest'
     container_name: data_nocodb
     ports:
@@ -12,6 +12,7 @@ services:
     restart: always
     volumes:
       - data_nocodb:/usr/app/data
+      - ${BACKUP_DIR}/data/nocodb:/backup
     networks:
       - database
       - frontend
@@ -25,7 +26,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"'
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"nocodb_db\""]
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
@@ -34,6 +35,25 @@ services:
     networks:
       - database
 
+  nocodb_data:
+    container_name: data_nocodb_data
+    environment:
+      POSTGRES_DB: nocodb_data
+      POSTGRES_PASSWORD: ${DATA_DATA_NOCODB_POSTGRES_PASSWORD}
+      POSTGRES_USER: ${DATA_DATA_NOCODB_POSTGRES_USER}
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"nocodb_data\""]
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_data:/var/lib/postgresql/data
+    networks:
+      - database
+
 volumes:
   data_nocodb:
   data_nocodb_db:
+  data_nocodb_data:

@@ -1,16 +1,37 @@
 services:
   appsmith:
-    image: index.docker.io/appsmith/appsmith-ee
+    image: index.docker.io/appsmith/appsmith-ce
     container_name: apps_appsmith
+    environment:
+      - APPSMITH_BACKUP_CRON_EXPRESSION=0 0 * * *
+      - APPSMITH_BACKUP_ARCHIVE_LIMIT=5
     ports:
-      - '80:80'
-      - '443:443'
+      - '${APPS_PORT}:80'
+      - '${APPS_PORT_SSL}:443'
     volumes:
-      - apps_appsmith:/appsmith-stacks
+      - ${DATA_DIR}/apps_appsmith:/appsmith-stacks
+      - ${BACKUP_DIR}/appsmith:/appsmith-stacks/data/backup/
     restart: unless-stopped
     networks:
       - frontend
+
+  apps_db:
+    container_name: apps_db
+    environment:
+      POSTGRES_DB: apps
+      POSTGRES_PASSWORD: ${APPS_POSTGRES_PASSWORD}
+      POSTGRES_USER: apps
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"apps\""]
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - apps_db:/var/lib/postgresql/data
+    networks:
       - database
 
 volumes:
-  apps_appsmith:
+  apps_db:

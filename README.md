@@ -6,18 +6,18 @@
 | [NocoDB](https://www.nocodb.com/)                       | Airtable/DB Management          | data      |   1   | x    |
 | [Open Meetings](https://openmeetings.apache.org/)       | Group wear                      | meetings  |   1   | x    |
 | [Language Tool](https://languagetool.org/)              | Grammar Tool                    | grammar   |   1   | x    |
-| [collabora](https://www.collaboraonline.com/)           | Office                          | office    |   1   |      |
+| [collabora](https://www.collaboraonline.com/)           | Office                          | office    |   1   | x    |
 | [Grist](https://www.getgrist.com/)                      | Airtable Replacement            | grist     |   1   | x    |
 | [Gist](https://github.com/thomiceli/opengist)           | Paste bin                       | pastebin  |   1   |      |
-| [Dashy](https://dashy.to/)                              | Dashboard                       | home      |   1   |      |
+| [Dashy](https://dashy.to/)                              | Dashboard                       | home      |   1   | x    |
 | MyIP                                                    | Network tools                   | network   |   1   |      |
-| [dolibarr](https://www.dolibarr.org/)                   | ERP / CRM                       | company   |   1   |      |
+| [dolibarr](https://www.dolibarr.org/)                   | ERP / CRM                       | company   |   1   | x    |
 | [Appsmith](https://www.appsmith.com/)                   | app creator                     | apps      |   1   | x    |
 | Shlink                                                  | URL Shortener                   | url       |   1   |      |
 | [Baikal](https://sabre.io/baikal/)                      | Calender Management             | cal       |   1   | x    |
-| [Etherpad](https://etherpad.org/)                       | Collaborative Document Creation | documents |       |
-| [AnythingLLM](https://anythingllm.com/)                 | Self hosted LLM agent           | ai        |       |
-| [twenty](https://twenty.com/)                           | CRM                             | crm       |       |
+| [Etherpad](https://etherpad.org/)                       | Collaborative Document Creation | documents |       |      |
+| [AnythingLLM](https://anythingllm.com/)                 | Self hosted LLM agent           | ai        |       |      |
+| [twenty](https://twenty.com/)                           | CRM                             | crm       |       | x    |
 | [WooCommerce]()                                         | EShop                           | store     |       |
 | [Frappe HR]()                                           | HR Management                   | hr        |       |
 | Snipeit                                                 | Inventory Management            | inventory |       |

@@ -1,0 +1,42 @@
+volumes:
+  company_dolibarr_html:
+  company_dolibarr_docs:
+  company_dolibarr_db:
+
+services:
+
+  company_mariadb:
+    image: mariadb:noble
+    container_name: company_mariadb
+    networks:
+      - database
+    restart: always
+    command: --character_set_client=utf8 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    volumes:
+      - company_dolibarr_db:/var/lib/mysql
+    environment:
+        - MYSQL_DATABASE=dolibarr
+        - MYSQL_USER=dolibarr
+        - MYSQL_PASSWORD=${COMPANY_DB_PASSWORD}
+        - MYSQL_RANDOM_ROOT_PASSWORD=yes
+
+  company_dolibarr:
+    image: upshift/dolibarr:latest
+    container_name: company_dolibarr
+    networks:
+      - frontend
+      - database
+    restart: always
+    depends_on:
+        - company_mariadb
+    ports:
+        - ${COMPANY_PORT}:80
+    environment:
+        - DOLI_DB_HOST=company_mariadb
+        - DOLI_DB_NAME=company_dolibarr
+        - DOLI_DB_USER=dolibarr
+        - DOLI_DB_PASSWORD=${COMPANY_DB_PASSWORD}
+    volumes:
+        - company_dolibarr_html:/var/www/html
+        - company_dolibarr_docs:/var/www/documents
+        - ${BACKUP_DIR}/company/dolibarr:/backup

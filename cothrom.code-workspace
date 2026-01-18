@@ -1,8 +1,8 @@
 {
   "folders": [
     {
-      "path": "."
-    }
+      "path": ".",
+    },
   ],
   "settings": {
     // Editor Configuration
@@ -18,50 +18,50 @@
       "**/*.pyc": true,
       "**/node_modules": true,
       "**/.next": true,
-      "**/.cache": true
+      "**/.cache": true,
     },
 
     // Formatting - JSON
     "[json]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.formatOnSave": true,
     },
 
     // Formatting - JSON with Comments
     "[jsonc]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.formatOnSave": true,
     },
 
     // Formatting - YAML
     "[yaml]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.formatOnSave": true,
     },
 
     // Formatting - Markdown
     "[markdown]": {
-      "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.defaultFormatter": "yzhang.markdown-all-in-one",
+      "editor.formatOnSave": true,
     },
 
     // Markdown Linting
     "markdownlint.config": {
       "MD013": false,
-      "MD033": false
+      "MD033": false,
     },
     // Docker & Container Configuration
 
     // Dockerfile Formatting
     "[dockerfile]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.formatOnSave": true,
     },
 
     // Docker Compose Formatting
     "[dockercompose]": {
       "editor.defaultFormatter": "esbenp.prettier-vscode",
-      "editor.formatOnSave": true
+      "editor.formatOnSave": true,
     },
 
     // Docker Compose
@@ -78,42 +78,72 @@
       "docker/**/*.yml": "dockercompose",
       "docker/**/*.yaml": "dockercompose",
       "docker/*.yml": "dockercompose",
-      "docker/*.yaml": "dockercompose"
+      "docker/*.yaml": "dockercompose",
+      "./docker/apps.yml": "dockercompose",
     },
 
     // ESPHome Configuration - Exclude docker folder
     "esphome.configFiles": [],
     "esphome.include": ["**/*.yaml", "**/*.yml"],
     "esphome.exclude": ["docker/**"],
-    "cSpell.ignoreWords": ["MSMTPRC", "Perplexica", "ckulka", "monkeybutts"],
+    "cSpell.ignoreWords": [
+      "Airtable",
+      "INITDB",
+      "LANGTOOL",
+      "MSMTPRC",
+      "NOCODB",
+      "PGID",
+      "PUID",
+      "Perplexica",
+      "appsmith",
+      "ckulka",
+      "collabora",
+      "healthcheck",
+      "isready",
+      "lscr",
+      "monkeybutts",
+      "projectsend"
+    ],
     "cSpell.words": [
       "Airtable",
+      "appsmith",
       "Appsmith",
       "Authelia",
       "collabora",
+      "cothrom",
       "Dashy",
       "dockercompose",
       "dolibarr",
+      "dotenv",
       "esphome",
       "Flowy",
+      "grammar_languagetool_ngrams",
+      "gvisor",
       "Immich",
+      "INITDB",
       "LANGTOOL",
+      "languagetool",
+      "lscr",
+      "mongosh",
       "myorg",
       "NGRAM",
+      "ngrams",
       "Noco",
       "nocodb",
       "Omnitools",
       "pastebin",
       "PGID",
+      "projectsend",
       "PUID",
       "Shlink",
-      "Snipeit"
+      "Snipeit",
+      "TYPEORM",
     ],
     "containers.containers.groupBy": "None",
     "containers.containers.sortBy": "CreatedTime",
     "containers.images.sortBy": "CreatedTime",
     "containers.composeBuild": true,
     "containers.composeDetached": true,
-    "containers.composeCommand": "docker compose"
-  }
+    "containers.composeCommand": "docker compose",
+  },
 }

@@ -9,6 +9,7 @@ services:
       - GRIST_ALLOWED_HOSTS=webhook.grist.${DOMAIN}
       - GRIST_DOMAIN=grist.${DOMAIN}
       - GRIST_SINGLE_ORG=${GRIST_SINGLE_ORG}
+      - GRIST_SESSION_SECRET=${GRIST_SESSION_SECRET}
       - GRIST_HIDE_UI_ELEMENTS=billing
       - GRIST_LIST_PUBLIC_SITES=false
       - GRIST_MAX_UPLOAD_ATTACHMENT_MB=15
@@ -30,10 +31,12 @@ services:
       - TYPEORM_TYPE=postgres
     volumes:
       - grist_data:/persist
+      - ${BACKUP_DIR}/grist:/backup
     ports:
-      - 3000:8080
+      - ${GRIST_PORT}:8080
     depends_on:
-      - database
+      grist_db:
+        condition: service_healthy
     networks:
       - frontend
       - database
@@ -41,7 +44,6 @@ services:
   grist_db:
     image: postgres:17-bookworm
     container_name: grist_db
-    user: '${PUID}'
     environment:
       - POSTGRES_DB=grist
       - POSTGRES_USER=grist
@@ -50,6 +52,11 @@ services:
       - grist_db:/var/lib/postgresql/data
     networks:
       - database
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"grist\""]
+      timeout: 2s
 
 volumes:
   grist_data:

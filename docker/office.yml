@@ -1,0 +1,16 @@
+services:
+  office_code:
+    image: collabora/code
+    ports:
+      - ${OFFICE_PORT}:9980
+    restart: unless-stopped
+    networks:
+      - frontend
+      - database
+    volumes:
+      - ${BACKUP_DIR}/office:/backup
+    environment:
+      username: ${OFFICE_USERNAME}
+      password: ${OFFICE_PASSWORD}
+      server_name: ${OFFICE_SERVER_NAME}
+    container_name: office_code

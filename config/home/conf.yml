@@ -1,0 +1,27 @@
+pageInfo:
+  title: Cothrom
+  description: Cothrum is my freelancing deployment for docker
+
+appConfig:
+  language: en-GB
+  defaultOpeningMethod: newtab
+  statusCheck: true
+  webSearch:
+    searchEngine: google
+    openingMethod: newtab
+
+sections:
+- name: Apps
+  items:
+    - title: AppSmith
+      url: https://apps.cothrom.ie
+      description: AppSmith is a platform for building and deploying web applications.
+      statusCheckUrl: https://apps.cothrom.ie
+    - title: NocoDB
+      url: https://data.cothrom.ie
+      description: NocoDB is a platform for building and deploying web applications.
+      statusCheckUrl: https://data.cothrom.ie
+    - title: Grist
+      url: https://grist.cothrom.ie
+      description: Grist is a platform for building and deploying web applications.
+      statusCheckUrl: https://grist.cothrom.ie

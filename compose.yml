@@ -1,3 +1,5 @@
+name: cothrom
+
 ###
 ### Networks
 ###
@@ -18,9 +20,12 @@ networks:
 
 include:
   - path: ./docker/apps.yml
-  - path: ./docker/files.yml
+  - path: ./docker/cal.yml
   - path: ./docker/data.yml
+  - path: ./docker/files.yml  
   - path: ./docker/grammar.yml
   - path: ./docker/grist.yml
   - path: ./docker/home.yml
-  - path: ./docker/meetings.yml
+  - path: ./docker/office.yml
+  - path: ./docker/crm.yml
+  # - path: ./docker/meetings.yml

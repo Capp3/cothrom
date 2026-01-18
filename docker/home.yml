@@ -1,11 +1,11 @@
 services:
   dashy:
     image: lissy93/dashy
-    container_name: Dashy
+    container_name: home_dashy
     volumes:
-      - ../config/home/dashy-config.yml:/app/user-data/conf.yml
+      - ../config/home/:/app/user-data/
     ports:
-      - 8080:8080
+      - ${HOME_PORT}:8080
     environment:
       - NODE_ENV=production
       - UID=${PUID}

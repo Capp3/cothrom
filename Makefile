@@ -36,12 +36,6 @@ help: ## Show this help message
 # Cleanup Targets
 # =============================================================================
 
-clean: ## Remove temporary directories and files
-	@echo "Cleaning up temporary files..."
-	@rm -rf $(TEMP_DIR)
-	@rm -rf $(SCRIPTS_DIR)
-	@echo "Cleanup complete."
-
 post-install: ## Clean up after installation
 	@echo "Running post-install cleanup..."
 	@rm -rf $(SCRIPTS_DIR) 2>/dev/null || true
@@ -166,27 +160,14 @@ push: check-host
 	fi
 	@echo "Push complete."
 
-up: check-host
-	@echo "Starting services for host: $(HOST)..."
-	@if [ -n "$(TAG)" ]; then \
-		echo "Starting services with tag: $(TAG)"; \
-		docker compose -f hosts/$(HOST)/compose.yml up -d $(TAG); \
-	else \
-		echo "Starting all services"; \
-		docker compose -f hosts/$(HOST)/compose.yml up -d; \
-	fi
+up:
+	@echo "Starting services"
+	@docker compose up -d
 	@echo "Services started successfully."
 
-down: check-host
+down:
 	@echo "Stopping services for host: $(HOST)..."
-	@if [ -n "$(TAG)" ]; then \
-		echo "Stopping services with tag: $(TAG)"; \
-		docker compose -f hosts/$(HOST)/compose.yml stop $(TAG); \
-	else \
-		echo "Stopping all services"; \
-		docker compose -f hosts/$(HOST)/compose.yml down; \
-	fi
-	@echo "Services stopped successfully."
+	@docker compose stop
 
 restart: check-host
 	@echo "Restarting services for host: $(HOST)..."
@@ -246,3 +227,8 @@ exec:
 	@echo "Executing shell inside container: $(filter-out $@,$(MAKECMDGOALS))"
 	@echo "Type 'exit' to return to host shell"
 	@docker exec -it $(filter-out $@,$(MAKECMDGOALS)) sh
+
+dotenv:
+	@echo "Generating .env file..."
+	@cp .env.sample .env
+	@echo ".env file generated successfully."
