@@ -29,9 +29,36 @@ include:
   - path: ./docker/files.yml
   - path: ./docker/grammar.yml
   - path: ./docker/home.yml
+  - path: ./docker/pi.yml
   # - path: ./docker/project.yml
 
   # - path: ./docker/company.yml
   # - path: ./docker/meetings.yml
   # - path: ./docker/office.yml
   # - path: ./docker/grist.yml
+
+###
+### Services
+###
+
+services:
+  cloudflare-tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel
+    hostname: cloudflare-tunnel
+    restart: unless-stopped
+    command: tunnel run
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ./docker/build/cloudflare/hosts:/etc/hosts
+    environment:
+      - "TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}"
+    networks:
+      - ingress
+      - frontend
+    healthcheck:
+      test: ["CMD", "cloudflared", "--version"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s

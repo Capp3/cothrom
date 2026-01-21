@@ -1,0 +1,16 @@
+services:
+  pi_glance:
+    container_name: pi_glance
+    image: glanceapp/glance
+    restart: unless-stopped
+    volumes:
+      - ../config/pi_home:/app/config
+      - ./docker/build/pi_glance/assets:/app/assets
+      - /etc/localtime:/etc/localtime:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - ${PI_GLANCES_PORT}:8080
+    environment:
+      - MY_SECRET_TOKEN=${PI_GLANCES_SECRET_TOKEN}
+    networks:
+      - frontend
