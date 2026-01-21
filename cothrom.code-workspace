@@ -80,6 +80,7 @@
       "docker/*.yml": "dockercompose",
       "docker/*.yaml": "dockercompose",
       "./docker/apps.yml": "dockercompose",
+      "*.json": "jsonc"
     },
 
     // ESPHome Configuration - Exclude docker folder
@@ -88,6 +89,7 @@
     "esphome.exclude": ["docker/**"],
     "cSpell.ignoreWords": [
       "Airtable",
+      "DOLI",
       "INITDB",
       "LANGTOOL",
       "MSMTPRC",
@@ -95,13 +97,18 @@
       "PGID",
       "PUID",
       "Perplexica",
+      "TYPEORM",
+      "akaunting",
       "appsmith",
       "ckulka",
       "collabora",
+      "etherpad",
       "healthcheck",
       "isready",
+      "languagetool",
       "lscr",
       "monkeybutts",
+      "newtab",
       "projectsend"
     ],
     "cSpell.words": [
@@ -113,6 +120,7 @@
       "cothrom",
       "Dashy",
       "dockercompose",
+      "DOLI",
       "dolibarr",
       "dotenv",
       "esphome",
@@ -137,7 +145,7 @@
       "PUID",
       "Shlink",
       "Snipeit",
-      "TYPEORM",
+      "TYPEORM"
     ],
     "containers.containers.groupBy": "None",
     "containers.containers.sortBy": "CreatedTime",

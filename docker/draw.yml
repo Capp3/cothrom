@@ -1,0 +1,15 @@
+services:
+  draw_excalidraw:
+    image: excalidraw/excalidraw
+    container_name: draw_excalidraw
+    restart: unless-stopped
+    ports:
+      - ${DRAW_PORT}:80
+    volumes:
+      - draw_excalidraw:/data
+    networks:
+      - frontend
+      - database
+
+volumes:
+  draw_excalidraw:

@@ -14,22 +14,22 @@ services:
       - ${CRM_SERVER_PORT}:3000
     environment:
       NODE_PORT: 3000
-      PG_DATABASE_URL: postgres://crm:${CRM_DATABASE_PASSWORD}@crm_db:5432/default
+      PG_DATABASE_URL: postgres://crm:${CRM_DATABASE_PASSWORD}@crm_db:5432/crm
       SERVER_URL: https://crm.${DOMAIN}
       REDIS_URL: redis://crm_redis:6379
-      DISABLE_DB_MIGRATIONS: "true"
+      DISABLE_DB_MIGRATIONS: "false"
       DISABLE_CRON_JOBS_REGISTRATION: "false"
       STORAGE_TYPE: "local"
       APP_SECRET: ${CRM_APP_SECRET}
 
-      # EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-contact@yourdomain.com}
-      # EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-"John from YourDomain"}
-      # EMAIL_SYSTEM_ADDRESS: ${EMAIL_SYSTEM_ADDRESS:-system@yourdomain.com}
-      # EMAIL_DRIVER: ${EMAIL_DRIVER:-smtp}
-      # EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST:-smtp.gmail.com}
-      # EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-465}
-      # EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
-      # EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
+      EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-contact@yourdomain.com}
+      EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-"John from YourDomain"}
+      EMAIL_SYSTEM_ADDRESS: ${EMAIL_SYSTEM_ADDRESS:-system@yourdomain.com}
+      EMAIL_DRIVER: ${EMAIL_DRIVER:-smtp}
+      EMAIL_SMTP_HOST: ${EMAIL_SMTP_HOST:-smtp.gmail.com}
+      EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-465}
+      EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
+      EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
 
     depends_on:
       crm_db:
@@ -53,7 +53,7 @@ services:
       - crm-server-local-data-worker:/app/packages/twenty-server/.local-storage
     command: ["yarn", "worker:prod"]
     environment:
-      PG_DATABASE_URL: postgres://crm:${CRM_DATABASE_PASSWORD}@crm_db:5432/default
+      PG_DATABASE_URL: postgres://crm:${CRM_DATABASE_PASSWORD}@crm_db:5432/crm
       SERVER_URL: https://crm.${DOMAIN}
       REDIS_URL: redis://crm_redis:6379
       DISABLE_DB_MIGRATIONS: "true"

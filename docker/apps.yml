@@ -1,5 +1,5 @@
 services:
-  appsmith:
+  apps_appsmith:
     image: index.docker.io/appsmith/appsmith-ce
     container_name: apps_appsmith
     environment:
@@ -14,13 +14,14 @@ services:
     restart: unless-stopped
     networks:
       - frontend
+      - database
 
   apps_db:
     container_name: apps_db
     environment:
-      POSTGRES_DB: apps
-      POSTGRES_PASSWORD: ${APPS_POSTGRES_PASSWORD}
-      POSTGRES_USER: apps
+      - POSTGRES_DB=apps
+      - POSTGRES_PASSWORD=${APPS_POSTGRES_PASSWORD}
+      - POSTGRES_USER=apps
     healthcheck:
       interval: 10s
       retries: 10

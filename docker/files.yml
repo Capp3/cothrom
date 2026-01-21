@@ -1,5 +1,5 @@
 services:
-  projectsend:
+  files_projectsend:
     image: lscr.io/linuxserver/projectsend:latest
     container_name: files_projectsend
     environment:
@@ -15,22 +15,22 @@ services:
     restart: unless-stopped
     networks:
       - frontend
+      - database
+    depends_on:
+      - files_db
 
   files_db:
     container_name: files_db
+    command: --character_set_client=utf8 --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
-      POSTGRES_DB: files
-      POSTGRES_PASSWORD: ${FILES_POSTGRES_PASSWORD}
-      POSTGRES_USER: files
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"files\""]
-      timeout: 2s
-    image: postgres:17-bookworm
+        - MYSQL_DATABASE=files_projectsend
+        - MYSQL_USER=projectsend
+        - MYSQL_PASSWORD=${FILES_DB_PASSWORD}
+        - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    image: mariadb:noble
     restart: always
     volumes:
-      - files_db:/var/lib/postgresql/data
+      - files_db:/var/lib/mysql
     networks:
       - database
 

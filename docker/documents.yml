@@ -1,0 +1,63 @@
+##### Volumes
+
+volumes:
+  documents_postgres_data:
+  documents_plugins:
+  documents_etherpad-var:
+
+##### Services
+services:
+  documents-etherpad:
+    user: "0:0"
+    build:
+      context: .
+      dockerfile: build/dockerfile.etherpad
+    tty: true
+    stdin_open: true
+    volumes:
+      - ${DATA_DIR}/documents/exports:/exports
+      - ${DATA_DIR}/documents/backups:/backups
+      - documents_etherpad-var:/opt/etherpad-lite/var
+      - ./build/documents/etherpad.settings.json:/opt/etherpad-lite/settings.json
+    depends_on:
+      - documents-postgres
+    environment:
+      NODE_ENV: production
+      ADMIN_PASSWORD: ${DOCUMENTS_ADMIN_PASSWORD}
+      DB_CHARSET: utf8mb4
+      DB_HOST: documents-postgres
+      DB_NAME: documents-etherpad
+      DB_PASS: ${DOCUMENTS_DB_PASSWORD}
+      DB_PORT: 5432
+      DB_TYPE: "postgres"
+      DB_USER: documents
+      DEFAULT_PAD_TEXT: Welcome to your new document
+      DISABLE_IP_LOGGING: false
+      SOFFICE: '/usr/bin/soffice'
+      TRUST_PROXY: true
+      ETHERPAD_FQDN: documents.${DOMAIN}
+      INSTALL_SOFFICE: null
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      OPENROUTER_MODEL: ${DOCUMENTS_LLM_MODEL}
+    restart: always
+    networks:
+      - frontend
+      - database
+    container_name: documents-etherpad
+    ports:
+      - "${DOCUMENTS_PORT}:9001"
+
+  documents-postgres:
+    image: postgres:17-bookworm
+    container_name: documents-postgres
+    environment:
+      POSTGRES_DB: documents-etherpad
+      POSTGRES_PASSWORD: ${DOCUMENTS_DB_PASSWORD}
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: documents
+      PGDATA: /var/lib/postgresql/data/pgdata
+    restart: always
+    networks:
+      - database
+    volumes:
+      - documents_postgres_data:/var/lib/postgresql/data

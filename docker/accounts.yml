@@ -1,0 +1,48 @@
+services:
+
+  accounts_akaunting:
+    container_name: accounts_akaunting
+    image: akaunting/akaunting:latest
+    ports:
+      - ${ACCOUNTS_PORT}:80
+    volumes:
+      - accounts_akaunting_data:/var/www/html
+      - ${BACKUP_DIR}/accounts:/backup
+    restart: unless-stopped
+    environment:
+      - AKAUNTING_SETUP
+      - APP_URL=https://accounts.${DOMAIN}
+      - LOCALE=${LOCALE}
+      - DB_HOST=accounts_akaunting-db
+      - DB_PORT=3306
+      - DB_NAME=accounts_akaunting
+      - DB_USERNAME=accounts
+      - DB_PASSWORD=${ACCOUNTS_DB_PASSWORD}
+      - DB_PREFIX=asd_
+      - COMPANY_NAME=${COMPANY_NAME}
+      - COMPANY_EMAIL=${EMAIL_SYSTEM_ADDRESS}
+      - ADMIN_EMAIL=${EMAIL_SYSTEM_ADDRESS}
+      - ADMIN_PASSWORD=${ACCOUNTS_ADMIN_PASSWORD}
+    depends_on:
+      - accounts_akaunting-db
+    networks:
+      - database
+      - frontend
+
+  accounts_akaunting-db:
+    container_name: accounts_akaunting-db
+    image: mariadb
+    volumes:
+      - accounts_akaunting_db:/var/lib/mysql
+    restart: unless-stopped
+    environment:
+      - MYSQL_DATABASE=accounts_akaunting
+      - MYSQL_USER=accounts
+      - MYSQL_PASSWORD=${ACCOUNTS_DB_PASSWORD}
+      - MYSQL_RANDOM_ROOT_PASSWORD=yes
+    networks:
+      - database
+
+volumes:
+  accounts_akaunting_data:
+  accounts_akaunting_db:

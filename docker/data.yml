@@ -53,7 +53,64 @@ services:
     networks:
       - database
 
+  data_nocodb_assdisaster_db:
+    container_name: data_nocodb_assdisaster_db
+    environment:
+      POSTGRES_DB: assdisaster_db
+      POSTGRES_PASSWORD: ${DATA_ASSDISASTER_POSTGRES_PASSWORD}
+      POSTGRES_USER: ${DATA_ASSDISASTER_POSTGRES_USER}
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"assdisaster_db\""]
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_assdisaster_db:/var/lib/postgresql/data
+    networks:
+      - database
+
+  data_nocodb_fineopinion_db:
+    container_name: data_nocodb_fineopinion_db
+    environment:
+      POSTGRES_DB: fineopinion_db
+      POSTGRES_PASSWORD: ${DATA_FINEOPINION_POSTGRES_PASSWORD}
+      POSTGRES_USER: ${DATA_FINEOPINION_POSTGRES_USER}
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"fineopinion_db\""]
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_fineopinion_db:/var/lib/postgresql/data
+    networks:
+      - database
+
+  data_nocodb_awesome_db:
+    container_name: data_nocodb_awesome_db
+    environment:
+      POSTGRES_DB: awesome_db
+      POSTGRES_PASSWORD: ${DATA_AWESOME_POSTGRES_PASSWORD}
+      POSTGRES_USER: ${DATA_AWESOME_POSTGRES_USER}
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"awesome_db\""]
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_awesome_db:/var/lib/postgresql/data
+    networks:
+      - database
+
 volumes:
   data_nocodb:
   data_nocodb_db:
   data_nocodb_data:
+  data_nocodb_assdisaster_db:
+  data_nocodb_fineopinion_db:
+  data_nocodb_awesome_db:

@@ -1,5 +1,5 @@
 services:
-  languagetool:
+  grammar_languagetool:
     build:
       context: .
       dockerfile: build/dockerfile.languagetool

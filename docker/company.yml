@@ -15,7 +15,7 @@ services:
     volumes:
       - company_dolibarr_db:/var/lib/mysql
     environment:
-        - MYSQL_DATABASE=dolibarr
+        - MYSQL_DATABASE=company_dolibarr
         - MYSQL_USER=dolibarr
         - MYSQL_PASSWORD=${COMPANY_DB_PASSWORD}
         - MYSQL_RANDOM_ROOT_PASSWORD=yes
@@ -36,6 +36,12 @@ services:
         - DOLI_DB_NAME=company_dolibarr
         - DOLI_DB_USER=dolibarr
         - DOLI_DB_PASSWORD=${COMPANY_DB_PASSWORD}
+        - DOLI_ADMIN_LOGIN=${COMPANY_ADMIN_LOGIN}
+        - DOLI_ADMIN_PASSWORD=${COMPANY_ADMIN_PASSWORD}
+        - DOLI_COMPANY_NAME=${COMPANY_NAME}
+        - DOLI_COMPANY_COUNTRYCODE=${COUNTRY_CODE}
+        - WWW_USER_ID=${PUID:-1000}
+        - WWW_GROUP_ID=${PGID:-1000}
     volumes:
         - company_dolibarr_html:/var/www/html
         - company_dolibarr_docs:/var/www/documents
