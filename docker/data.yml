@@ -1,10 +1,10 @@
 services:
-  nocodb:
+  data_nocodb:
     depends_on:
-      nocodb_db:
+      data_nocodb_db:
         condition: service_healthy
     environment:
-      NC_DB: 'pg://nocodb_db:5432?u=${DATA_NOCODB_POSTGRES_USER}&p=${DATA_NOCODB_POSTGRES_PASSWORD}&d=nocodb_db'
+      NC_DB: 'pg://data_nocodb_db:5432?u=postgres&p=password&d=data_nocodb_db'
     image: 'nocodb/nocodb:latest'
     container_name: data_nocodb
     ports:
@@ -17,12 +17,12 @@ services:
       - database
       - frontend
 
-  nocodb_db:
+  data_nocodb_db:
     container_name: data_nocodb_db
     environment:
-      POSTGRES_DB: nocodb_db
-      POSTGRES_PASSWORD: ${DATA_NOCODB_POSTGRES_PASSWORD}
-      POSTGRES_USER: ${DATA_NOCODB_POSTGRES_USER}
+      POSTGRES_DB: data_nocodb_db
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
     healthcheck:
       interval: 10s
       retries: 10
@@ -107,6 +107,60 @@ services:
     networks:
       - database
 
+  data_nocodb_nia_cr_db:
+    container_name: data_nocodb_nia_cr_db
+    environment:
+      POSTGRES_DB: data_nocodb_nia_cr_db
+      POSTGRES_PASSWORD: ${DATA_NOCODB_NIA_CR_POSTGRES_PASSWORD}
+      POSTGRES_USER: data_nocodb_nia_cr_db
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"data_nocodb_nia_cr_db\""]
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_nia_cr_db:/var/lib/postgresql/data
+    networks:
+      - database
+
+  data_nocodb_nia_cdn_db:
+    container_name: data_nocodb_nia_cdn_db
+    environment:
+      POSTGRES_DB: data_nocodb_nia_cdn_db
+      POSTGRES_PASSWORD: ${DATA_NOCODB_NIA_CDN_POSTGRES_PASSWORD}
+      POSTGRES_USER: data_nocodb_nia_cdn_db
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"data_nocodb_nia_cdn_db\""]
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_nia_cdn_db:/var/lib/postgresql/data
+    networks:
+      - database
+
+  data_nocodb_nia_vcasod_db:
+    container_name: data_nocodb_nia_vcasod_db
+    environment:
+      POSTGRES_DB: data_nocodb_nia_vcasod_db
+      POSTGRES_PASSWORD: ${DATA_NOCODB_NIA_VCASOD_POSTGRES_PASSWORD}
+      POSTGRES_USER: data_nocodb_nia_vcasod_db
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"data_nocodb_nia_vcasod_db\""]
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_nia_vcasod_db:/var/lib/postgresql/data
+    networks:
+      - database
+
 volumes:
   data_nocodb:
   data_nocodb_db:
@@ -114,3 +168,6 @@ volumes:
   data_nocodb_assdisaster_db:
   data_nocodb_fineopinion_db:
   data_nocodb_awesome_db:
+  data_nocodb_nia_cr_db:
+  data_nocodb_nia_cdn_db:
+  data_nocodb_nia_vcasod_db:

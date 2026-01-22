@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=./dashy-conf.schema.json
+
 pageInfo:
   title: Cothrom
   description: Cothrom is my freelancing deployment for Docker

@@ -33,11 +33,25 @@
                     - title: Working Document
                       url: https://documents.cothrom.ie/p/NIA_Assembly_DR
                     - title: Data Tables
-                      url: https://data.cothrom.ie
+                      url: https://data.cothrom.ie/dashboard/#/nc/ppdw4n0uwx6asul
                 - title: VCAS OnDemand Refresh
                   links:
                     - title: Working Document
                       url: https://documents.cothrom.ie/p/NIA_VCAS_OD_Refresh
+                    - title: Data Tables
+                      url: https://data.cothrom.ie/dashboard/#/nc/pt8avpf4822mfch
+                - title: NIA CDN
+                  links:
+                    - title: Working Document
+                      url: https://documents.cothrom.ie/p/NIA_CDN
+                    - title: Data Tables
+                      url: https://data.cothrom.ie/dashboard/#/nc/p6r87i34u4dhpqr
+                - title: Committee Room Refresh
+                  links:
+                    - title: Working Document
+                      url: https://documents.cothrom.ie/p/NIA_Committee_Room_Refresh
+                    - title: Data Tables
+                      url: https://data.cothrom.ie/dashboard/#/nc/pnjuoz4fmbqzzfh
             - type: bookmarks
               # title: company
               groups:
@@ -50,22 +64,19 @@
                     url: https://www.airtable.com
                   - title: NIA IP Address Log
                     url: https://docs.google.com/spreadsheets/d/15e8r2j-wWONs9QBlmVewPKXYqo2VxMaxx85b4Tp8vzk/
-
-
         - type: to-do
     - size: small
       widgets:
         - type: markets
           markets:
-            - symbol: SPY
-              name: S&P 500
-            - symbol: BTC-USD
-              name: Bitcoin
-              chart-link: https://www.tradingview.com/chart/?symbol=INDEX:BTCUSD
-            - symbol: GBPUSD
-              name: GBPUSD
-            - symbol: AAPL
-              symbol-link: https://www.google.com/search?tbm=nws&q=apple
-              name: Apple
+            - symbol: NDX
+              name: Nasdaq 100
+              chart-link: https://www.tradingview.com/symbols/NASDAQ-NDX/
+            - symbol: ^FTSE
+              name: FTSE 100
+              chart-link: https://www.tradingview.com/symbols/FTSE-UKX/
+            - symbol: GBPUSD=X
+              name: GBP-USD
+              chart-link: https://uk.finance.yahoo.com/quote/GBPUSD%3DX/
         - type: reddit
           subreddit: news
