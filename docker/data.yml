@@ -26,7 +26,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"nocodb_db\""]
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "nocodb_db"']
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
@@ -44,13 +44,25 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"nocodb_data\""]
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "nocodb_data"']
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
     volumes:
       - data_nocodb_data:/var/lib/postgresql/data
     networks:
+      - database
+
+  rss-bridge:
+    image: rssbridge/rss-bridge:latest
+    container_name: data_rss-bridge
+    volumes:
+      - ./config:/config
+    ports:
+      - ${DATA_RSS_BRIDGE_PORT}:80
+    restart: unless-stopped
+    networks:
+      - backend
       - database
 
   data_nocodb_assdisaster_db:
@@ -62,7 +74,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"assdisaster_db\""]
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "assdisaster_db"']
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
@@ -80,7 +92,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"fineopinion_db\""]
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "fineopinion_db"']
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
@@ -98,7 +110,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"awesome_db\""]
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "awesome_db"']
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
@@ -116,7 +128,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"data_nocodb_nia_cr_db\""]
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "data_nocodb_nia_cr_db"']
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
@@ -134,7 +146,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"data_nocodb_nia_cdn_db\""]
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "data_nocodb_nia_cdn_db"']
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
@@ -152,12 +164,48 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"data_nocodb_nia_vcasod_db\""]
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "data_nocodb_nia_vcasod_db"']
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
     volumes:
       - data_nocodb_nia_vcasod_db:/var/lib/postgresql/data
+    networks:
+      - database
+
+  data_nocodb_cothom_tracking_db:
+    container_name: data_nocodb_cothom_tracking_db
+    environment:
+      POSTGRES_DB: ${DATA_NOCODB_COTHOM_TRACKING_POSTGRES_DB_NAME}
+      POSTGRES_PASSWORD: ${DATA_NOCODB_COTHOM_TRACKING_POSTGRES_PASSWORD}
+      POSTGRES_USER: ${DATA_NOCODB_COTHOM_TRACKING_POSTGRES_USER}
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "postgres"']
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_cothom_tracking_db:/var/lib/postgresql/data
+    networks:
+      - database
+
+  data_nocodb_electronoise_db:
+    container_name: data_nocodb_electronoise_db
+    environment:
+      POSTGRES_DB: data_nocodb_electronoise_db
+      POSTGRES_PASSWORD: ${DATA_NOCODB_ELECTRONOISE_POSTGRES_PASSWORD}
+      POSTGRES_USER: postgres
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ['CMD-SHELL', 'pg_isready -U "postgres" -d "data_nocodb_electronoise_db"']
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - data_nocodb_electronoise_db:/var/lib/postgresql/data
     networks:
       - database
 
@@ -171,3 +219,6 @@ volumes:
   data_nocodb_nia_cr_db:
   data_nocodb_nia_cdn_db:
   data_nocodb_nia_vcasod_db:
+  data_nocodb_cothom_tracking_db:
+  data_nocodb_electronoise_db:
+  data_rss-bridge:

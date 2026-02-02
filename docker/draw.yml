@@ -10,6 +10,19 @@ services:
     networks:
       - frontend
       - database
+    labels:
+      # database | app | proxy | worker | cache | storage
+      - io.cothrom.role="app"
+      - io.cothrom.stack="draw"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+      # postgres | mysql | mariadb | redis
+      # - io.cothrom.db.engine="postgres"
+      # - io.cothrom.db.backup.command="pg_dump -U $POSTGRES_USER -d $POSTGRES_DB"
+      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
+      # daily | hourly | weekly
+      - io.cothrom.backup.policy="weekly"
 
 volumes:
   draw_excalidraw:

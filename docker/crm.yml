@@ -21,7 +21,6 @@ services:
       DISABLE_CRON_JOBS_REGISTRATION: "false"
       STORAGE_TYPE: "local"
       APP_SECRET: ${CRM_APP_SECRET}
-
       EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-contact@yourdomain.com}
       EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-"John from YourDomain"}
       EMAIL_SYSTEM_ADDRESS: ${EMAIL_SYSTEM_ADDRESS:-system@yourdomain.com}
@@ -30,7 +29,6 @@ services:
       EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-465}
       EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
       EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
-
     depends_on:
       crm_db:
         condition: service_healthy
@@ -42,6 +40,19 @@ services:
       timeout: 5s
       retries: 20
     restart: always
+    labels:
+          ## database | app | proxy | worker | cache | storage
+      - io.cothrom.role="app"
+      - io.cothrom.stack="crm"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+      # postgres | mysql | mariadb | redis
+      # - io.cothrom.db.engine="mysql"
+      # - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
+      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
+      # daily | hourly | weekly
+      # - io.cothrom.backup.policy="daily"
 
   worker:
     image: twentycrm/twenty:${CRM_TAG:-latest}
@@ -60,7 +71,6 @@ services:
       DISABLE_CRON_JOBS_REGISTRATION: "false"
       STORAGE_TYPE: "local"
       APP_SECRET: ${CRM_APP_SECRET}
-
       EMAIL_FROM_ADDRESS: ${EMAIL_FROM_ADDRESS:-contact@yourdomain.com}
       EMAIL_FROM_NAME: ${EMAIL_FROM_NAME:-"John from YourDomain"}
       EMAIL_SYSTEM_ADDRESS: ${EMAIL_SYSTEM_ADDRESS:-system@yourdomain.com}
@@ -69,13 +79,25 @@ services:
       EMAIL_SMTP_PORT: ${EMAIL_SMTP_PORT:-465}
       EMAIL_SMTP_USER: ${EMAIL_SMTP_USER:-}
       EMAIL_SMTP_PASSWORD: ${EMAIL_SMTP_PASSWORD:-}
-
     depends_on:
       crm_db:
         condition: service_healthy
       crm_server:
         condition: service_healthy
     restart: always
+    labels:
+      # database | app | proxy | worker | cache | storage
+      - io.cothrom.role="worker"
+      - io.cothrom.stack="crm"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+      # postgres | mysql | mariadb | redis
+      # - io.cothrom.db.engine="mysql"
+      # - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
+      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
+      # daily | hourly | weekly
+      # - io.cothrom.backup.policy="daily"
 
   crm_db:
     image: postgres:17-bookworm
@@ -105,6 +127,19 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    labels:
+      # database | app | proxy | worker | cache | storage
+      - io.cothrom.role="database"
+      - io.cothrom.stack="crm"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="database"
+      # postgres | mysql | mariadb | redis
+      - io.cothrom.db.engine="redis"
+      - io.cothrom.db.backup.command="pg_dump -U $POSTGRES_USER -d $POSTGRES_DB"
+      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
+      # daily | hourly | weekly
+      - io.cothrom.backup.policy="daily"
 
 volumes:
   crm-server-local-data:

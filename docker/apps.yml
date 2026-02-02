@@ -1,20 +1,231 @@
 services:
-  apps_appsmith:
-    image: index.docker.io/appsmith/appsmith-ce
-    container_name: apps_appsmith
-    environment:
-      - APPSMITH_BACKUP_CRON_EXPRESSION=0 0 * * *
-      - APPSMITH_BACKUP_ARCHIVE_LIMIT=5
-    ports:
-      - '${APPS_PORT}:80'
-      - '${APPS_PORT_SSL}:443'
-    volumes:
-      - ${DATA_DIR}/apps_appsmith:/appsmith-stacks
-      - ${BACKUP_DIR}/appsmith:/appsmith-stacks/data/backup/
+  # apps_appsmith:
+  #   image: index.docker.io/appsmith/appsmith-ce
+  #   container_name: apps_appsmith
+  #   environment:
+  #     - APPSMITH_BACKUP_CRON_EXPRESSION=0 0 * * *
+  #     - APPSMITH_BACKUP_ARCHIVE_LIMIT=5
+  #   ports:
+  #     - '${APPS_PORT}:80'
+  #     - '${APPS_PORT_SSL}:443'
+  #   volumes:
+  #     - ${DATA_DIR}/apps_appsmith:/appsmith-stacks
+  #     - ${BACKUP_DIR}/appsmith:/appsmith-stacks/data/backup/
+  #   restart: unless-stopped
+  #   networks:
+  #     - frontend
+  #     - database
+  #   labels:
+  #     ## database | app | proxy | worker | cache | storage
+  #     - io.cothrom.role="app"
+  #     - io.cothrom.stack="apps"
+  #     - io.cothrom.data="true"
+  #     - io.cothrom.data.class="config"
+  #     - io.cothrom.backup.policy="weekly"
+
+  apps_budibase:
     restart: unless-stopped
+    image: budibase/apps
+    container_name: apps_budibase
+    environment:
+      SELF_HOSTED: 1
+      COUCH_DB_URL: http://couchdb:${APPS_COUCH_DB_PASSWORD}@apps_couchdb:5984
+      WORKER_URL: http://apps_worker_budibase:4003
+      MINIO_URL: http://apps_minio:9000
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      INTERNAL_API_KEY: ${APPS_INTERNAL_API_KEY}
+      BUDIBASE_ENVIRONMENT: ${APPS_BUDIBASE_ENVIRONMENT}
+      PORT: 4002
+      API_ENCRYPTION_KEY: ${APPS_API_ENCRYPTION_KEY}
+      JWT_SECRET: ${APPS_JWT_SECRET}
+      LOG_LEVEL: info
+      ENABLE_ANALYTICS: 'true'
+      REDIS_URL: apps_redis:6379
+      # REDIS_PASSWORD: ${REDIS_PASSWORD}
+      # REDIS_USERNAME: ${REDIS_USERNAME:-}
+      BB_ADMIN_USER_EMAIL: ${APPS_BB_ADMIN_USER_EMAIL}
+      BB_ADMIN_USER_PASSWORD: ${APPS_BB_ADMIN_USER_PASSWORD}
+      PLUGINS_DIR: ${APPS_PLUGINS_DIR}
+      OFFLINE_MODE: ${APPS_OFFLINE_MODE:-}
+    depends_on:
+      - apps_worker_budibase
+      - apps_redis
     networks:
-      - frontend
       - database
+      - backend
+    labels:
+      ## database | app | proxy | worker | cache | storage
+      - io.cothrom.role="app"
+      - io.cothrom.stack="apps"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+  #    volumes:
+  #      - /some/path/to/plugins:/plugins
+
+  apps_worker_budibase:
+    container_name: apps_worker_budibase
+    restart: unless-stopped
+    image: budibase/worker
+    environment:
+      SELF_HOSTED: 1
+      PORT: 4003
+      CLUSTER_PORT: ${APPS_PORT}
+      API_ENCRYPTION_KEY: ${APPS_API_ENCRYPTION_KEY}
+      JWT_SECRET: ${APPS_JWT_SECRET}
+      MINIO_ACCESS_KEY: ${APPS_MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${APPS_MINIO_SECRET_KEY}
+      MINIO_URL: http://apps_minio:9000
+      APPS_URL: http://apps_budibase:4002
+      COUCH_DB_USERNAME: couchdb
+      COUCH_DB_PASSWORD: ${APPS_COUCH_DB_PASSWORD}
+      COUCH_DB_URL: http://couchdb:${APPS_COUCH_DB_PASSWORD}@apps_couchdb:5984
+      INTERNAL_API_KEY: ${APPS_INTERNAL_API_KEY}
+      REDIS_URL: apps_redis:6379
+      # REDIS_PASSWORD: ${REDIS_PASSWORD}
+      # REDIS_USERNAME: ${REDIS_USERNAME:-}
+      OFFLINE_MODE: ${OFFLINE_MODE:-}
+    depends_on:
+      - apps_redis
+      - apps_minio
+    networks:
+      - backend
+      - database
+    labels:
+      ## database | app | proxy | worker | cache | storage
+      - io.cothrom.role="worker"
+      - io.cothrom.stack="apps"
+      - io.cothrom.data="false"
+      # database | files | config
+      # - io.cothrom.data.class="config"
+      # postgres | mysql | mariadb | redis
+      # - io.cothrom.db.engine="mysql"
+      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
+      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
+      # daily | hourly | weekly
+      # - io.cothrom.backup.policy="weekly"
+
+  apps_minio:
+    container_name: apps_minio
+    restart: unless-stopped
+    image: minio/minio
+    volumes:
+      - apps_minio_data:/data
+    environment:
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_BROWSER: 'off'
+    command: server /data --console-address ":9001"
+    networks:
+      - database
+      - backend
+    healthcheck:
+      test: "timeout 5s bash -c ':> /dev/tcp/127.0.0.1/9000' || exit 1"
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    labels:
+      ## database | app | proxy | worker | cache | storage
+      - io.cothrom.role="app"
+      - io.cothrom.stack="apps"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+      # postgres | mysql | mariadb | redis
+      # - io.cothrom.db.engine="mysql"
+      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
+      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
+      # daily | hourly | weekly
+      # - io.cothrom.backup.policy="weekly"
+
+  apps_proxy:
+    restart: unless-stopped
+    ports:
+      - '${APPS_PORT}:10000'
+    container_name: apps_bbproxy
+    image: budibase/proxy
+    environment:
+      - PROXY_RATE_LIMIT_WEBHOOKS_PER_SECOND=10
+      - PROXY_RATE_LIMIT_API_PER_SECOND=50
+      - APPS_UPSTREAM_URL=http://apps_budibase:4002
+      - WORKER_UPSTREAM_URL=http://apps_worker:4003
+      - MINIO_UPSTREAM_URL=http://minio-service:9000
+      - COUCHDB_UPSTREAM_URL=http://apps_couchdb:5984
+      - RESOLVER=127.0.0.11
+    depends_on:
+      - apps_minio
+      - apps_worker_budibase
+      - apps_budibase
+      - apps_couchdb
+    networks:
+      - database
+      - backend
+      - frontend
+    labels:
+      ## database | app | proxy | worker | cache | storage
+      - io.cothrom.role="proxy"
+      - io.cothrom.stack="apps"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+      # postgres | mysql | mariadb | redis
+      # - io.cothrom.db.engine="mysql"
+      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
+      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
+      # daily | hourly | weekly
+      # - io.cothrom.backup.policy="weekly"
+
+  apps_couchdb:
+    container_name: apps_couchdb
+    restart: unless-stopped
+    image: budibase/database:2.0.0
+    environment:
+      - COUCHDB_PASSWORD=${APPS_COUCH_DB_PASSWORD}
+      - COUCHDB_USER=couchdb
+      - TARGETBUILD=docker-compose
+      - DATA_DIR=/data
+    volumes:
+      - apps_couchdb3_data:/data
+    networks:
+      - database
+    labels:
+      ## database | app | proxy | worker | cache | storage
+      - io.cothrom.role="database"
+      - io.cothrom.stack="apps"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="database"
+      # postgres | mysql | mariadb | redis
+      # - io.cothrom.db.engine="mysql"
+      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
+      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
+      # daily | hourly | weekly
+      # - io.cothrom.backup.policy="weekly"
+
+  apps_redis:
+    container_name: apps_redis
+    restart: unless-stopped
+    image: redis
+    command: redis-server
+    networks:
+      - database
+      - backend
+    volumes:
+      - redis_data:/data
+    labels:
+      ## database | app | proxy | worker | cache | storage
+      - io.cothrom.role="cache"
+      - io.cothrom.stack="apps"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+      # postgres | mysql | mariadb | redis
+      # - io.cothrom.db.engine="mysql"
+      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
+      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
+      # daily | hourly | weekly
+      # - io.cothrom.backup.policy="weekly"
 
   apps_db:
     container_name: apps_db
@@ -25,7 +236,7 @@ services:
     healthcheck:
       interval: 10s
       retries: 10
-      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"apps\""]
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "apps"']
       timeout: 2s
     image: postgres:17-bookworm
     restart: always
@@ -33,6 +244,44 @@ services:
       - apps_db:/var/lib/postgresql/data
     networks:
       - database
+    labels:
+      - io.cothrom.role="database"
+      - io.cothrom.stack="apps"
+      - io.cothrom.data="true"
+      - io.cothrom.data.class="database"
+      - io.cothrom.db.engine="postgres"
+      - io.cothrom.db.backup.command="pg_dump -U $POSTGRES_USER -d $POSTGRES_DB"
+      - io.cothrom.backup.policy="weekly"
+
+  apps_time_db:
+    container_name: apps_time_db
+    environment:
+      - POSTGRES_DB=apps_time
+      - POSTGRES_PASSWORD=${APPS_TIME_POSTGRES_PASSWORD}
+      - POSTGRES_USER=postgres
+    healthcheck:
+      interval: 10s
+      retries: 10
+      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "apps"']
+      timeout: 2s
+    image: postgres:17-bookworm
+    restart: always
+    volumes:
+      - apps_time_db:/var/lib/postgresql/data
+    networks:
+      - database
+    labels:
+      - io.cothrom.role="database"
+      - io.cothrom.stack="apps"
+      - io.cothrom.data="true"
+      - io.cothrom.data.class="database"
+      - io.cothrom.db.engine="postgres"
+      - io.cothrom.db.backup.command="pg_dump -U $POSTGRES_USER -d $POSTGRES_DB"
+      - io.cothrom.backup.policy="weekly"
 
 volumes:
   apps_db:
+  apps_time_db:
+  apps_couchdb3_data:
+  apps_minio_data:
+  redis_data:

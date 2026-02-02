@@ -30,6 +30,7 @@ include:
   - path: ./docker/grammar.yml
   - path: ./docker/home.yml
   - path: ./docker/pi.yml
+  - path: ./docker/pdf.yml
   # - path: ./docker/project.yml
 
   # - path: ./docker/company.yml

@@ -28,6 +28,11 @@ services:
     networks:
       - database
       - frontend
+    labels:
+      - io.cothrom.role="app"
+      - io.cothrom.stack="accounts"
+      - io.cothrom.data="true"
+      - io.cothrom.data.class="config"
 
   accounts_akaunting-db:
     container_name: accounts_akaunting-db
@@ -42,6 +47,19 @@ services:
       - MYSQL_RANDOM_ROOT_PASSWORD=yes
     networks:
       - database
+    labels:
+      ## database | app | proxy | worker | cache | storage
+      - io.cothrom.role="database"
+      - io.cothrom.stack="accounts"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="database"
+      # postgres | mysql | mariadb | redis
+      - io.cothrom.db.engine="mysql"
+      # - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
+      - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
+      # daily | hourly | weekly
+      - io.cothrom.backup.policy="daily"
 
 volumes:
   accounts_akaunting_data:

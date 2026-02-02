@@ -46,6 +46,19 @@ services:
     container_name: documents-etherpad
     ports:
       - "${DOCUMENTS_PORT}:9001"
+    labels:
+      # database | app | proxy | worker | cache | storage
+      - io.cothrom.role="app"
+      - io.cothrom.stack="documents"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+      # postgres | mysql | mariadb | redis
+      # - io.cothrom.db.engine="mysql"
+      # - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
+      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
+      # daily | hourly | weekly
+      # - io.cothrom.backup.policy="daily"
 
   documents-postgres:
     image: postgres:17-bookworm
@@ -61,3 +74,16 @@ services:
       - database
     volumes:
       - documents_postgres_data:/var/lib/postgresql/data
+    labels:
+      # database | app | proxy | worker | cache | storage
+      - io.cothrom.role="database"
+      - io.cothrom.stack="documents"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="database"
+      # postgres | mysql | mariadb | redis
+      - io.cothrom.db.engine="postgres"
+      - io.cothrom.db.backup.command="pg_dump -U $POSTGRES_USER -d $POSTGRES_DB"
+      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
+      # daily | hourly | weekly
+      - io.cothrom.backup.policy="daily"
