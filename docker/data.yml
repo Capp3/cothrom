@@ -1,3 +1,31 @@
+###
+### Definitions
+###
+
+x-op-app-network: &app-network
+  networks:
+    - database
+    - frontend
+x-op-app-restart-policy: &app_restart_policy
+  restart: unless-stopped
+x-op-db-restart-policy: &db_restart_policy
+  restart: always
+x-op-healthcheck-postgres-policy: &post_health_policy
+  healthcheck:
+    interval: 10s
+    retries: 10
+    test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+    timeout: 2s
+x-op-postgres-image: &post-image
+  image: postgres:17-bookworm
+x-op-postgres-network: &db-network
+  networks:
+    - database
+
+###
+### Services
+###
+
 services:
   data_nocodb:
     depends_on:
@@ -9,13 +37,10 @@ services:
     container_name: data_nocodb
     ports:
       - ${DATA_PORT}:8080
-    restart: always
+    <<: [*app_restart_policy, *app-network]
     volumes:
       - data_nocodb:/usr/app/data
       - ${BACKUP_DIR}/data/nocodb:/backup
-    networks:
-      - database
-      - frontend
 
   data_nocodb_db:
     container_name: data_nocodb_db
@@ -23,202 +48,27 @@ services:
       POSTGRES_DB: data_nocodb_db
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "nocodb_db"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
+    <<: [*post_health_policy, *db_restart_policy, *post-image, *db-network]
     volumes:
       - data_nocodb_db:/var/lib/postgresql/data
-    networks:
-      - database
 
-  nocodb_data:
-    container_name: data_nocodb_data
-    environment:
-      POSTGRES_DB: nocodb_data
-      POSTGRES_PASSWORD: ${DATA_DATA_NOCODB_POSTGRES_PASSWORD}
-      POSTGRES_USER: ${DATA_DATA_NOCODB_POSTGRES_USER}
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "nocodb_data"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
+  data_pgadmin:
+    container_name: data_pgadmin
+    image: dpage/pgadmin4:latest
+    <<: [*app_restart_policy, *app-network]
     volumes:
-      - data_nocodb_data:/var/lib/postgresql/data
-    networks:
-      - database
-
-  rss-bridge:
-    image: rssbridge/rss-bridge:latest
-    container_name: data_rss-bridge
-    volumes:
-      - ./config:/config
+      - data_pgadmin:/var/lib/pgadmin
     ports:
-      - ${DATA_RSS_BRIDGE_PORT}:80
-    restart: unless-stopped
-    networks:
-      - backend
-      - database
-
-  data_nocodb_assdisaster_db:
-    container_name: data_nocodb_assdisaster_db
+      - ${PGADMIN_PORT}:80
     environment:
-      POSTGRES_DB: assdisaster_db
-      POSTGRES_PASSWORD: ${DATA_ASSDISASTER_POSTGRES_PASSWORD}
-      POSTGRES_USER: ${DATA_ASSDISASTER_POSTGRES_USER}
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "assdisaster_db"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - data_nocodb_assdisaster_db:/var/lib/postgresql/data
-    networks:
-      - database
-
-  data_nocodb_fineopinion_db:
-    container_name: data_nocodb_fineopinion_db
-    environment:
-      POSTGRES_DB: fineopinion_db
-      POSTGRES_PASSWORD: ${DATA_FINEOPINION_POSTGRES_PASSWORD}
-      POSTGRES_USER: ${DATA_FINEOPINION_POSTGRES_USER}
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "fineopinion_db"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - data_nocodb_fineopinion_db:/var/lib/postgresql/data
-    networks:
-      - database
-
-  data_nocodb_awesome_db:
-    container_name: data_nocodb_awesome_db
-    environment:
-      POSTGRES_DB: awesome_db
-      POSTGRES_PASSWORD: ${DATA_AWESOME_POSTGRES_PASSWORD}
-      POSTGRES_USER: ${DATA_AWESOME_POSTGRES_USER}
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "awesome_db"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - data_nocodb_awesome_db:/var/lib/postgresql/data
-    networks:
-      - database
-
-  data_nocodb_nia_cr_db:
-    container_name: data_nocodb_nia_cr_db
-    environment:
-      POSTGRES_DB: data_nocodb_nia_cr_db
-      POSTGRES_PASSWORD: ${DATA_NOCODB_NIA_CR_POSTGRES_PASSWORD}
-      POSTGRES_USER: data_nocodb_nia_cr_db
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "data_nocodb_nia_cr_db"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - data_nocodb_nia_cr_db:/var/lib/postgresql/data
-    networks:
-      - database
-
-  data_nocodb_nia_cdn_db:
-    container_name: data_nocodb_nia_cdn_db
-    environment:
-      POSTGRES_DB: data_nocodb_nia_cdn_db
-      POSTGRES_PASSWORD: ${DATA_NOCODB_NIA_CDN_POSTGRES_PASSWORD}
-      POSTGRES_USER: data_nocodb_nia_cdn_db
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "data_nocodb_nia_cdn_db"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - data_nocodb_nia_cdn_db:/var/lib/postgresql/data
-    networks:
-      - database
-
-  data_nocodb_nia_vcasod_db:
-    container_name: data_nocodb_nia_vcasod_db
-    environment:
-      POSTGRES_DB: data_nocodb_nia_vcasod_db
-      POSTGRES_PASSWORD: ${DATA_NOCODB_NIA_VCASOD_POSTGRES_PASSWORD}
-      POSTGRES_USER: data_nocodb_nia_vcasod_db
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "data_nocodb_nia_vcasod_db"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - data_nocodb_nia_vcasod_db:/var/lib/postgresql/data
-    networks:
-      - database
-
-  data_nocodb_cothom_tracking_db:
-    container_name: data_nocodb_cothom_tracking_db
-    environment:
-      POSTGRES_DB: ${DATA_NOCODB_COTHOM_TRACKING_POSTGRES_DB_NAME}
-      POSTGRES_PASSWORD: ${DATA_NOCODB_COTHOM_TRACKING_POSTGRES_PASSWORD}
-      POSTGRES_USER: ${DATA_NOCODB_COTHOM_TRACKING_POSTGRES_USER}
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "postgres"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - data_nocodb_cothom_tracking_db:/var/lib/postgresql/data
-    networks:
-      - database
-
-  data_nocodb_electronoise_db:
-    container_name: data_nocodb_electronoise_db
-    environment:
-      POSTGRES_DB: data_nocodb_electronoise_db
-      POSTGRES_PASSWORD: ${DATA_NOCODB_ELECTRONOISE_POSTGRES_PASSWORD}
-      POSTGRES_USER: postgres
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "postgres" -d "data_nocodb_electronoise_db"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - data_nocodb_electronoise_db:/var/lib/postgresql/data
-    networks:
-      - database
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_ADMIN_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_ADMIN_PASSWORD}
+      PGADMIN_LISTEN_ADDRESS: 0.0.0.0
 
 volumes:
   data_nocodb:
   data_nocodb_db:
-  data_nocodb_data:
-  data_nocodb_assdisaster_db:
-  data_nocodb_fineopinion_db:
-  data_nocodb_awesome_db:
-  data_nocodb_nia_cr_db:
-  data_nocodb_nia_cdn_db:
-  data_nocodb_nia_vcasod_db:
-  data_nocodb_cothom_tracking_db:
-  data_nocodb_electronoise_db:
-  data_rss-bridge:
+  data_pgadmin:
+
+include:
+  - path: ./datastorage.yml

@@ -15,6 +15,31 @@ networks:
     driver: bridge
 
 ###
+### Definitions
+###
+
+x-op-app-network: &app-network
+  networks:
+    - database
+    - frontend
+    - backend
+x-op-app-restart-policy: &app_restart_policy
+  restart: unless-stopped
+x-op-db-restart-policy: &db_restart_policy
+  restart: always
+x-op-healthcheck-postgres-policy: &post_health_policy
+  healthcheck:
+    interval: 10s
+    retries: 10
+    test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+    timeout: 2s
+x-op-postgres-image: &post-image
+  image: postgres:17-bookworm
+x-op-postgres-network: &db-network
+  networks:
+    - database
+
+###
 ### Include
 ###
 
@@ -32,7 +57,6 @@ include:
   - path: ./docker/pi.yml
   - path: ./docker/pdf.yml
   # - path: ./docker/project.yml
-
   # - path: ./docker/company.yml
   # - path: ./docker/meetings.yml
   # - path: ./docker/office.yml

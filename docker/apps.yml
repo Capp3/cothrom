@@ -1,3 +1,27 @@
+###
+### Definitions
+###
+
+x-op-app-network: &app-network
+  networks:
+    - database
+    - frontend
+    - backend
+x-op-app-restart-policy: &app_restart_policy
+  restart: unless-stopped
+x-op-db-restart-policy: &db_restart_policy
+  restart: always
+x-op-healthcheck-postgres-policy: &post_health_policy
+  healthcheck:
+    interval: 10s
+    retries: 10
+    test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "$$POSTGRES_DB"']
+    timeout: 2s
+x-op-postgres-image: &post-image
+  image: postgres:17-bookworm
+x-op-postgres-network: &db-network
+  networks:
+    - database
 services:
   # apps_appsmith:
   #   image: index.docker.io/appsmith/appsmith-ce
@@ -24,18 +48,19 @@ services:
   #     - io.cothrom.backup.policy="weekly"
 
   apps_budibase:
-    restart: unless-stopped
+    <<: [*app_restart_policy, *app-network]
     image: budibase/apps
     container_name: apps_budibase
     environment:
+      # CUSTOM_DOMAIN: apps.${DOMAIN}
       SELF_HOSTED: 1
       COUCH_DB_URL: http://couchdb:${APPS_COUCH_DB_PASSWORD}@apps_couchdb:5984
       WORKER_URL: http://apps_worker_budibase:4003
       MINIO_URL: http://apps_minio:9000
-      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY}
-      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY}
+      MINIO_ACCESS_KEY: ${APPS_MINIO_ACCESS_KEY}
+      MINIO_SECRET_KEY: ${APPS_MINIO_SECRET_KEY}
       INTERNAL_API_KEY: ${APPS_INTERNAL_API_KEY}
-      BUDIBASE_ENVIRONMENT: ${APPS_BUDIBASE_ENVIRONMENT}
+      BUDIBASE_ENVIRONMENT: ${APPS_BUDIBASE_ENVIRONMENT:-production}
       PORT: 4002
       API_ENCRYPTION_KEY: ${APPS_API_ENCRYPTION_KEY}
       JWT_SECRET: ${APPS_JWT_SECRET}
@@ -46,14 +71,11 @@ services:
       # REDIS_USERNAME: ${REDIS_USERNAME:-}
       BB_ADMIN_USER_EMAIL: ${APPS_BB_ADMIN_USER_EMAIL}
       BB_ADMIN_USER_PASSWORD: ${APPS_BB_ADMIN_USER_PASSWORD}
-      PLUGINS_DIR: ${APPS_PLUGINS_DIR}
+      # PLUGINS_DIR: /plugins
       OFFLINE_MODE: ${APPS_OFFLINE_MODE:-}
     depends_on:
       - apps_worker_budibase
       - apps_redis
-    networks:
-      - database
-      - backend
     labels:
       ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="app"
@@ -66,7 +88,7 @@ services:
 
   apps_worker_budibase:
     container_name: apps_worker_budibase
-    restart: unless-stopped
+    <<: [*app_restart_policy, *app-network]
     image: budibase/worker
     environment:
       SELF_HOSTED: 1
@@ -89,9 +111,6 @@ services:
     depends_on:
       - apps_redis
       - apps_minio
-    networks:
-      - backend
-      - database
     labels:
       ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="worker"
@@ -140,7 +159,7 @@ services:
       # - io.cothrom.backup.policy="weekly"
 
   apps_proxy:
-    restart: unless-stopped
+    <<: [*app_restart_policy, *app-network]
     ports:
       - '${APPS_PORT}:10000'
     container_name: apps_bbproxy
@@ -150,7 +169,7 @@ services:
       - PROXY_RATE_LIMIT_API_PER_SECOND=50
       - APPS_UPSTREAM_URL=http://apps_budibase:4002
       - WORKER_UPSTREAM_URL=http://apps_worker:4003
-      - MINIO_UPSTREAM_URL=http://minio-service:9000
+      - MINIO_UPSTREAM_URL=http://apps_minio:9000
       - COUCHDB_UPSTREAM_URL=http://apps_couchdb:5984
       - RESOLVER=127.0.0.11
     depends_on:
@@ -158,10 +177,6 @@ services:
       - apps_worker_budibase
       - apps_budibase
       - apps_couchdb
-    networks:
-      - database
-      - backend
-      - frontend
     labels:
       ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="proxy"
@@ -178,7 +193,7 @@ services:
 
   apps_couchdb:
     container_name: apps_couchdb
-    restart: unless-stopped
+    <<: [*db_restart_policy, *db-network]
     image: budibase/database:2.0.0
     environment:
       - COUCHDB_PASSWORD=${APPS_COUCH_DB_PASSWORD}
@@ -187,8 +202,6 @@ services:
       - DATA_DIR=/data
     volumes:
       - apps_couchdb3_data:/data
-    networks:
-      - database
     labels:
       ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="database"
@@ -205,12 +218,9 @@ services:
 
   apps_redis:
     container_name: apps_redis
-    restart: unless-stopped
+    <<: [*db_restart_policy, *db-network]
     image: redis
     command: redis-server
-    networks:
-      - database
-      - backend
     volumes:
       - redis_data:/data
     labels:
@@ -227,61 +237,7 @@ services:
       # daily | hourly | weekly
       # - io.cothrom.backup.policy="weekly"
 
-  apps_db:
-    container_name: apps_db
-    environment:
-      - POSTGRES_DB=apps
-      - POSTGRES_PASSWORD=${APPS_POSTGRES_PASSWORD}
-      - POSTGRES_USER=apps
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "apps"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - apps_db:/var/lib/postgresql/data
-    networks:
-      - database
-    labels:
-      - io.cothrom.role="database"
-      - io.cothrom.stack="apps"
-      - io.cothrom.data="true"
-      - io.cothrom.data.class="database"
-      - io.cothrom.db.engine="postgres"
-      - io.cothrom.db.backup.command="pg_dump -U $POSTGRES_USER -d $POSTGRES_DB"
-      - io.cothrom.backup.policy="weekly"
-
-  apps_time_db:
-    container_name: apps_time_db
-    environment:
-      - POSTGRES_DB=apps_time
-      - POSTGRES_PASSWORD=${APPS_TIME_POSTGRES_PASSWORD}
-      - POSTGRES_USER=postgres
-    healthcheck:
-      interval: 10s
-      retries: 10
-      test: ['CMD-SHELL', 'pg_isready -U "$$POSTGRES_USER" -d "apps"']
-      timeout: 2s
-    image: postgres:17-bookworm
-    restart: always
-    volumes:
-      - apps_time_db:/var/lib/postgresql/data
-    networks:
-      - database
-    labels:
-      - io.cothrom.role="database"
-      - io.cothrom.stack="apps"
-      - io.cothrom.data="true"
-      - io.cothrom.data.class="database"
-      - io.cothrom.db.engine="postgres"
-      - io.cothrom.db.backup.command="pg_dump -U $POSTGRES_USER -d $POSTGRES_DB"
-      - io.cothrom.backup.policy="weekly"
-
 volumes:
-  apps_db:
-  apps_time_db:
   apps_couchdb3_data:
   apps_minio_data:
   redis_data:
