@@ -41,18 +41,10 @@ services:
       retries: 20
     restart: always
     labels:
-          ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="app"
       - io.cothrom.stack="crm"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="config"
-      # postgres | mysql | mariadb | redis
-      # - io.cothrom.db.engine="mysql"
-      # - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
-      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
-      # daily | hourly | weekly
-      # - io.cothrom.backup.policy="daily"
 
   worker:
     image: twentycrm/twenty:${CRM_TAG:-latest}
@@ -86,18 +78,10 @@ services:
         condition: service_healthy
     restart: always
     labels:
-      # database | app | proxy | worker | cache | storage
       - io.cothrom.role="worker"
       - io.cothrom.stack="crm"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="config"
-      # postgres | mysql | mariadb | redis
-      # - io.cothrom.db.engine="mysql"
-      # - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
-      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
-      # daily | hourly | weekly
-      # - io.cothrom.backup.policy="daily"
 
   crm_db:
     image: postgres:17-bookworm
@@ -115,6 +99,14 @@ services:
       interval: 5s
       timeout: 5s
       retries: 10
+    labels:
+      - io.cothrom.role="database"
+      - io.cothrom.stack="crm"
+      - io.cothrom.data="true"
+      - io.cothrom.data.class="database"
+      - io.cothrom.db.engine="postgres"
+      - io.cothrom.db.backup.command="pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB"
+      - io.cothrom.backup.policy="daily"
   crm_redis:
     image: redis
     container_name: crm_redis
@@ -128,18 +120,9 @@ services:
       timeout: 5s
       retries: 10
     labels:
-      # database | app | proxy | worker | cache | storage
-      - io.cothrom.role="database"
+      - io.cothrom.role="cache"
       - io.cothrom.stack="crm"
-      - io.cothrom.data="true"
-      # database | files | config
-      - io.cothrom.data.class="database"
-      # postgres | mysql | mariadb | redis
-      - io.cothrom.db.engine="redis"
-      - io.cothrom.db.backup.command="pg_dump -U $POSTGRES_USER -d $POSTGRES_DB"
-      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
-      # daily | hourly | weekly
-      - io.cothrom.backup.policy="daily"
+      - io.cothrom.data="false"
 
 volumes:
   crm-server-local-data:

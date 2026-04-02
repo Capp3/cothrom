@@ -109,6 +109,7 @@
       "monkeybutts",
       "newtab",
       "projectsend",
+      "stackname",
       "vcasod",
     ],
     "cSpell.words": [
@@ -130,6 +131,7 @@
       "Flowy",
       "grammar_languagetool_ngrams",
       "gvisor",
+      "healthcheck",
       "Immich",
       "INITDB",
       "LANGTOOL",
@@ -150,6 +152,7 @@
       "PUID",
       "Shlink",
       "Snipeit",
+      "stackname",
       "TYPEORM",
     ],
     "containers.containers.groupBy": "None",

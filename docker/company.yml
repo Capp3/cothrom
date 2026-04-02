@@ -20,17 +20,12 @@ services:
         - MYSQL_PASSWORD=${COMPANY_DB_PASSWORD}
         - MYSQL_RANDOM_ROOT_PASSWORD=yes
     labels:
-          ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="database"
       - io.cothrom.stack="company"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="database"
-      # postgres | mysql | mariadb | redis
       - io.cothrom.db.engine="mariadb"
-      # - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
-      - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
-      # daily | hourly | weekly
+      - io.cothrom.db.backup.command="mariadb-dump -u $$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE"
       - io.cothrom.backup.policy="daily"
 
   company_dolibarr:
@@ -60,15 +55,7 @@ services:
         - company_dolibarr_docs:/var/www/documents
         - ${BACKUP_DIR}/company/dolibarr:/backup
     labels:
-          ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="app"
       - io.cothrom.stack="company"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="config"
-      # postgres | mysql | mariadb | redis
-      # - io.cothrom.db.engine="mysql"
-      # - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
-      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
-      # daily | hourly | weekly
-      # - io.cothrom.backup.policy="daily"

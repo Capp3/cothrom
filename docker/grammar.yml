@@ -19,6 +19,10 @@ services:
     container_name: grammar_languagetool
     ports:
       - '${GRAMMAR_PORT}:8081'
+    labels:
+      - io.cothrom.role="app"
+      - io.cothrom.stack="grammar"
+      - io.cothrom.data="false"
 
 volumes:
   grammar_languagetool_ngrams:

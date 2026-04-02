@@ -22,7 +22,7 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
 # Phony targets (targets that don't represent files)
-.PHONY: help post-install update-memory-bank install-memory-bank update-rules install-rules vibe clean
+.PHONY: help post-install update-memory-bank install-memory-bank update-rules install-rules vibe clean backup backup-databases backup-configs backup-rotate
 
 # =============================================================================
 # Help Target
@@ -134,61 +134,75 @@ create-data-dir:
 	@chmod 775 $(DATA_DIR)
 	@echo "Data directory ready: $(DATA_DIR)"
 
-status: check-host
-	@echo "Container status for host: $(HOST)"
-	@docker compose -f hosts/$(HOST)/compose.yml ps
+# =============================================================================
+# Docker Compose Operations
+# =============================================================================
 
-pull: check-host
-	@echo "Pulling latest images for host: $(HOST)..."
-	@if [ -n "$(TAG)" ]; then \
-		echo "Pulling images with tag: $(TAG)"; \
-		docker compose -f hosts/$(HOST)/compose.yml pull $(TAG); \
-	else \
-		echo "Pulling all images"; \
-		docker compose -f hosts/$(HOST)/compose.yml pull; \
-	fi
-	@echo "Pull complete."
-
-push: check-host
-	@echo "Pushing images for host: $(HOST)..."
-	@if [ -n "$(TAG)" ]; then \
-		echo "Pushing images with tag: $(TAG)"; \
-		docker compose -f hosts/$(HOST)/compose.yml push $(TAG); \
-	else \
-		echo "Pushing all images"; \
-		docker compose -f hosts/$(HOST)/compose.yml push; \
-	fi
-	@echo "Push complete."
-
-up:
-	@echo "Starting services"
+up: ## Start all services
+	@echo "Starting services..."
 	@docker compose up -d
 	@echo "Services started successfully."
 
-down:
-	@echo "Stopping services for host: $(HOST)..."
+down: ## Stop all services
+	@echo "Stopping services..."
 	@docker compose stop
+	@echo "Services stopped."
 
-restart: check-host
-	@echo "Restarting services for host: $(HOST)..."
+restart: ## Restart all services (or specific service with TAG=servicename)
+	@echo "Restarting services..."
 	@if [ -n "$(TAG)" ]; then \
-		echo "Restarting services with tag: $(TAG)"; \
-		docker compose -f hosts/$(HOST)/compose.yml restart $(TAG); \
+		echo "Restarting service: $(TAG)"; \
+		docker compose restart $(TAG); \
 	else \
 		echo "Restarting all services"; \
-		docker compose -f hosts/$(HOST)/compose.yml restart; \
+		docker compose restart; \
 	fi
 	@echo "Services restarted successfully."
 
-host-logs: check-host
-	@echo "Showing logs for host: $(HOST) (Ctrl+C to exit)..."
+pull: ## Pull latest images (or specific service with TAG=servicename)
+	@echo "Pulling latest images..."
 	@if [ -n "$(TAG)" ]; then \
-		echo "Showing logs for tag: $(TAG)"; \
-		docker compose -f hosts/$(HOST)/compose.yml logs -f $(TAG); \
+		echo "Pulling image for: $(TAG)"; \
+		docker compose pull $(TAG); \
 	else \
-		echo "Showing logs for all services"; \
-		docker compose -f hosts/$(HOST)/compose.yml logs -f; \
+		echo "Pulling all images"; \
+		docker compose pull; \
 	fi
+	@echo "Pull complete."
+
+status: ## Show status of all services
+	@echo "Service status:"
+	@docker compose ps
+
+# =============================================================================
+# Backup
+# =============================================================================
+# Uses scripts in scripts/ - see scripts/README.md for details
+# Set BACKUP_DIR to override (default: ~/backups)
+# Set BACKUP_RETENTION_DAYS for rotation (default: 7, use 0 to disable)
+
+backup: ## Run all backups (databases + config + rotation)
+	@echo "Running backups..."
+	@$(SCRIPTS_DIR)/backup-all.sh
+
+backup-databases: ## Backup database containers only
+	@echo "Backing up databases..."
+	@$(SCRIPTS_DIR)/backup-databases.sh
+
+backup-configs: ## Backup project config/ directory only
+	@echo "Backing up configs..."
+	@$(SCRIPTS_DIR)/backup-configs.sh
+
+backup-rotate: ## Prune backups older than BACKUP_RETENTION_DAYS
+	@echo "Rotating backups..."
+	@$(SCRIPTS_DIR)/rotate-backups.sh
+
+# Legacy targets - commented out (require hosts/ directory that doesn't exist)
+# status: check-host
+# pull: check-host  
+# push: check-host
+# restart: check-host
+# host-logs: check-host
 
 clean:
 	@echo "Cleaning temporary files..."

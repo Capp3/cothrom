@@ -1,4 +1,18 @@
-# readme
+# Cothrom
+
+A comprehensive self-hosted stack for business and productivity services.
+
+## Documentation
+
+📚 **[Complete documentation available in docs/](docs/)**
+
+- [Getting Started](docs/getting-started.md) - Setup and first run
+- [Architecture](docs/architecture.md) - System design and networks
+- [Operations](docs/operations.md) - Daily operations and troubleshooting
+- [Configuration](docs/configuration/) - Environment, paths, and labels
+- [Active Stacks](docs/stacks/active.md) - Currently deployed services
+
+## Services Overview
 
 | Service                                                 | Description                     | Sub Name  | Stage | done |
 | ------------------------------------------------------- | ------------------------------- | --------- | :---: | ---- |
@@ -18,8 +32,8 @@
 | [Etherpad](https://etherpad.org/)                       | Collaborative Document Creation | documents |       |      |
 | [AnythingLLM](https://anythingllm.com/)                 | Self hosted LLM agent           | ai        |       |      |
 | [twenty](https://twenty.com/)                           | CRM                             | crm       |       | x    |
-| [WooCommerce]()                                         | EShop                           | store     |       |
-| [Frappe HR]()                                           | HR Management                   | hr        |       |
+| WooCommerce                                             | EShop                           | store     |       |
+| Frappe HR                                               | HR Management                   | hr        |       |
 | Snipeit                                                 | Inventory Management            | inventory |       |
 | [SyncThing](https://syncthing.net/)                     | File Backup                     | sync      |       |
 | [Paperless](https://docs.paperless-ngx.com/)            | Document Storage                | docs      |       |
@@ -53,3 +67,21 @@ serviceName:
 ```
 
 standard DB: postgres:17-bookworm
+
+## Labeling
+
+```yaml
+    labels:
+      # database | app | proxy | worker | cache | storage
+      - io.cothrom.role="app"
+      - io.cothrom.stack="documents"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+      # postgres | mysql | mariadb | redis
+      - io.cothrom.db.engine="mysql"
+      - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
+      - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
+      # daily | hourly | weekly
+      - io.cothrom.backup.policy="daily"
+```

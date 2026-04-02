@@ -21,6 +21,15 @@ x-op-postgres-image: &post-image
 x-op-postgres-network: &db-network
   networks:
     - database
+x-op-postgres-labels: &postgres-labels
+  labels:
+    - io.cothrom.role="database"
+    - io.cothrom.stack="datastorage"
+    - io.cothrom.data="true"
+    - io.cothrom.data.class="database"
+    - io.cothrom.db.engine="postgres"
+    - io.cothrom.db.backup.command="pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB"
+    - io.cothrom.backup.policy="weekly"
 
 ###
 ### Services
@@ -37,10 +46,18 @@ services:
     container_name: data_nocodb
     ports:
       - ${DATA_PORT}:8080
-    <<: [*app_restart_policy, *app-network]
+    <<: [*app_restart_policy, *app-network, *postgres-labels]
     volumes:
       - data_nocodb:/usr/app/data
       - ${BACKUP_DIR}/data/nocodb:/backup
+    labels:
+      # database | app | proxy | worker | cache | storage
+      - io.cothrom.role="app"
+      - io.cothrom.stack="data"
+      - io.cothrom.data="true"
+      # database | files | config
+      - io.cothrom.data.class="config"
+      - io.cothrom.backup.policy="weekly"
 
   data_nocodb_db:
     container_name: data_nocodb_db
@@ -48,7 +65,7 @@ services:
       POSTGRES_DB: data_nocodb_db
       POSTGRES_PASSWORD: password
       POSTGRES_USER: postgres
-    <<: [*post_health_policy, *db_restart_policy, *post-image, *db-network]
+    <<: [*post_health_policy, *db_restart_policy, *post-image, *db-network, *postgres-labels]
     volumes:
       - data_nocodb_db:/var/lib/postgresql/data
 

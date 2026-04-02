@@ -16,17 +16,10 @@ services:
       cal_db:
         condition: service_healthy
     labels:
-      ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="app"
       - io.cothrom.stack="cal"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="config"
-      # postgres | mysql | mariadb | redis
-      # - io.cothrom.db.engine="mysql"
-      # - io.cothrom.db.backup.command=pg_dump -U $POSTGRES_USER -d $POSTGRES_DB
-      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
-      # daily | hourly | weekly
       - io.cothrom.backup.policy="weekly"
 
   cal_db:
@@ -47,17 +40,12 @@ services:
     networks:
       - database
     labels:
-          ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="database"
       - io.cothrom.stack="cal"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="database"
-      # postgres | mysql | mariadb | redis
       - io.cothrom.db.engine="postgres"
-      - io.cothrom.db.backup.command="pg_dump -U $POSTGRES_USER -d $POSTGRES_DB"
-      # - io.cothrom.db.backup.command="mysqldump -u $MYSQL_USER -p $MYSQL_ROOT_PASSWORD $MYSQL_DATABASE"
-      # daily | hourly | weekly
+      - io.cothrom.db.backup.command="pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB"
       - io.cothrom.backup.policy="weekly"
 
 volumes:

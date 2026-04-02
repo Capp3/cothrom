@@ -77,11 +77,9 @@ services:
       - apps_worker_budibase
       - apps_redis
     labels:
-      ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="app"
       - io.cothrom.stack="apps"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="config"
   #    volumes:
   #      - /some/path/to/plugins:/plugins
@@ -112,18 +110,9 @@ services:
       - apps_redis
       - apps_minio
     labels:
-      ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="worker"
       - io.cothrom.stack="apps"
       - io.cothrom.data="false"
-      # database | files | config
-      # - io.cothrom.data.class="config"
-      # postgres | mysql | mariadb | redis
-      # - io.cothrom.db.engine="mysql"
-      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
-      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
-      # daily | hourly | weekly
-      # - io.cothrom.backup.policy="weekly"
 
   apps_minio:
     container_name: apps_minio
@@ -145,18 +134,10 @@ services:
       timeout: 20s
       retries: 3
     labels:
-      ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="app"
       - io.cothrom.stack="apps"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="config"
-      # postgres | mysql | mariadb | redis
-      # - io.cothrom.db.engine="mysql"
-      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
-      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
-      # daily | hourly | weekly
-      # - io.cothrom.backup.policy="weekly"
 
   apps_proxy:
     <<: [*app_restart_policy, *app-network]
@@ -178,18 +159,10 @@ services:
       - apps_budibase
       - apps_couchdb
     labels:
-      ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="proxy"
       - io.cothrom.stack="apps"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="config"
-      # postgres | mysql | mariadb | redis
-      # - io.cothrom.db.engine="mysql"
-      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
-      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
-      # daily | hourly | weekly
-      # - io.cothrom.backup.policy="weekly"
 
   apps_couchdb:
     container_name: apps_couchdb
@@ -203,18 +176,10 @@ services:
     volumes:
       - apps_couchdb3_data:/data
     labels:
-      ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="database"
       - io.cothrom.stack="apps"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="database"
-      # postgres | mysql | mariadb | redis
-      # - io.cothrom.db.engine="mysql"
-      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
-      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
-      # daily | hourly | weekly
-      # - io.cothrom.backup.policy="weekly"
 
   apps_redis:
     container_name: apps_redis
@@ -224,18 +189,10 @@ services:
     volumes:
       - redis_data:/data
     labels:
-      ## database | app | proxy | worker | cache | storage
       - io.cothrom.role="cache"
       - io.cothrom.stack="apps"
       - io.cothrom.data="true"
-      # database | files | config
       - io.cothrom.data.class="config"
-      # postgres | mysql | mariadb | redis
-      # - io.cothrom.db.engine="mysql"
-      # - io.cothrom.db.backup.command=pg_dump -U $$POSTGRES_USER -d $$POSTGRES_DB
-      # - io.cothrom.db.backup.command="mysqldump -u $$MYSQL_USER -p $$MYSQL_ROOT_PASSWORD $$MYSQL_DATABASE"
-      # daily | hourly | weekly
-      # - io.cothrom.backup.policy="weekly"
 
 volumes:
   apps_couchdb3_data:

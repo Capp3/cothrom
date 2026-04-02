@@ -14,3 +14,8 @@ services:
       - MY_SECRET_TOKEN=${PI_GLANCES_SECRET_TOKEN}
     networks:
       - frontend
+    labels:
+      - io.cothrom.role="app"
+      - io.cothrom.stack="pi"
+      - io.cothrom.data="false"
+      - io.cothrom.backup.policy="weekly"

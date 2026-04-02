@@ -51,11 +51,12 @@ include:
   - path: ./docker/data.yml
   - path: ./docker/documents.yml
   - path: ./docker/draw.yml
-  - path: ./docker/files.yml
-  - path: ./docker/grammar.yml
+  # - path: ./docker/files.yml
+  # - path: ./docker/grammar.yml
   - path: ./docker/home.yml
   - path: ./docker/pi.yml
   - path: ./docker/pdf.yml
+  - path: ./docker/schematics.yml
   # - path: ./docker/project.yml
   # - path: ./docker/company.yml
   # - path: ./docker/meetings.yml
@@ -77,12 +78,12 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - ./docker/build/cloudflare/hosts:/etc/hosts
     environment:
-      - "TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}"
+      - 'TUNNEL_TOKEN=${CLOUDFLARE_TUNNEL_TOKEN}'
     networks:
       - ingress
       - frontend
     healthcheck:
-      test: ["CMD", "cloudflared", "--version"]
+      test: ['CMD', 'cloudflared', '--version']
       interval: 30s
       timeout: 10s
       retries: 3

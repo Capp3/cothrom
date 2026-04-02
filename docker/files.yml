@@ -18,6 +18,12 @@ services:
       - database
     depends_on:
       - files_db
+    labels:
+      - io.cothrom.role="app"
+      - io.cothrom.stack="files"
+      - io.cothrom.data="true"
+      - io.cothrom.data.class="config"
+      - io.cothrom.backup.policy="weekly"
 
   files_db:
     container_name: files_db
@@ -33,6 +39,14 @@ services:
       - files_db:/var/lib/mysql
     networks:
       - database
+    labels:
+      - io.cothrom.role="database"
+      - io.cothrom.stack="files"
+      - io.cothrom.data="true"
+      - io.cothrom.data.class="database"
+      - io.cothrom.db.engine="mysql"
+      - io.cothrom.db.backup.command="mariadb-dump -u $$MYSQL_USER -p$$MYSQL_PASSWORD $$MYSQL_DATABASE"
+      - io.cothrom.backup.policy="weekly"
 
 volumes:
   files_config:
