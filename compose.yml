@@ -44,24 +44,12 @@ x-op-postgres-network: &db-network
 ###
 
 include:
-  # - path: ./docker/accounts.yml
-  - path: ./docker/apps.yml
-  # - path: ./docker/cal.yml
-  - path: ./docker/crm.yml
   - path: ./docker/data.yml
   - path: ./docker/documents.yml
   - path: ./docker/draw.yml
   # - path: ./docker/files.yml
-  # - path: ./docker/grammar.yml
   - path: ./docker/home.yml
   - path: ./docker/pi.yml
-  - path: ./docker/pdf.yml
-  # - path: ./docker/schematics.yml
-  # - path: ./docker/project.yml
-  # - path: ./docker/company.yml
-  # - path: ./docker/meetings.yml
-  # - path: ./docker/office.yml
-  # - path: ./docker/grist.yml
 
 ###
 ### Services
